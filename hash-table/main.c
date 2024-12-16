@@ -19,7 +19,9 @@ Warn: Function SUM or ASCII might cause HUGE performance lose!
 */
 #define BASE26
 
+#ifdef BASE26
 const int BASE = 26;
+#endif
 
 #ifdef CHAINING
 #ifdef BASE26

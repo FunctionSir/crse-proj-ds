@@ -3,3 +3,10 @@
 
 # Ignore builds
 build/
+
+# GCC built binary
+a.out
+
+# Test input and test output
+test.in
+test.out

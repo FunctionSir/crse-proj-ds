@@ -2,7 +2,7 @@
  * @Author: FunctionSir
  * @License: AGPLv3
  * @Date: 2024-12-16 08:58:16
- * @LastEditTime: 2024-12-16 14:45:54
+ * @LastEditTime: 2024-12-16 15:02:07
  * @LastEditors: FunctionSir
  * @Description: 学生成绩管理系统
  * @FilePath: /student-manager/main.c
@@ -224,21 +224,21 @@ int set_students(void) {
     return SUCCESS;
 }
 
-bool student_worse(Student *a, Student *b) {
+bool student_better(Student *a, Student *b) {
     if (a->score_with_weight != b->score_with_weight) {
-        return a->score_with_weight < b->score_with_weight;
+        return a->score_with_weight > b->score_with_weight;
     }
-    return a->id > b->id;
+    return strcmp(a->id, b->id) < 0;
 }
 
 int quick_sort_partition(Student stu[], int l, int r) {
     Student tmp = stu[l];
     while (l < r) {
-        while (r > l && !student_worse(&tmp, &stu[r])) {
+        while (r > l && !student_better(&stu[r], &tmp)) {
             r--;
         }
         stu[l] = stu[r];
-        while (l < r && !student_worse(&stu[l], &tmp)) {
+        while (l < r && !student_better(&tmp, &stu[l])) {
             l++;
         }
         stu[r] = stu[l];

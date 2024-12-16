@@ -25,7 +25,7 @@ const int SUCCESS = 1;
 const int FAILURE = 0;
 
 /* Cross-platform clear screen */
-#ifdef WINVER // For MS Windows.
+#ifdef _WIN32 // For MS Windows.
 void clear_screen(void) {
     system("cls");
 }

@@ -2,7 +2,7 @@
  * @Author: FunctionSir
  * @License: AGPLv3
  * @Date: 2024-12-16 08:58:16
- * @LastEditTime: 2024-12-16 11:18:33
+ * @LastEditTime: 2024-12-16 14:45:54
  * @LastEditors: FunctionSir
  * @Description: 学生成绩管理系统
  * @FilePath: /student-manager/main.c
@@ -12,6 +12,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /* Software info */
 const char *VER = "0.0.1";
@@ -101,7 +102,7 @@ int set_courses(void) {
     }
     puts("接下来, 输入每门课程的名称和权值.");
     puts("每行一个课程, 先输入名称(不大于255个英文字符), 然后一个空格,");
-    puts("后加权值(整数百分比). 权值大者代表重要性高.");
+    puts("后加权值(整数百分比, 无需加百分号). 权值大者代表重要性高.");
     int tot_percentage = 0;
     for (size_t i = 0; i < COURSES_CNT; i++) {
         int percentage;
@@ -223,21 +224,21 @@ int set_students(void) {
     return SUCCESS;
 }
 
-bool student_equal_or_less(Student *a, Student *b) {
+bool student_worse(Student *a, Student *b) {
     if (a->score_with_weight != b->score_with_weight) {
         return a->score_with_weight < b->score_with_weight;
     }
-    return a->id <= b->id;
+    return a->id > b->id;
 }
 
 int quick_sort_partition(Student stu[], int l, int r) {
     Student tmp = stu[l];
     while (l < r) {
-        while (r > l && student_equal_or_less(&tmp, &stu[r])) {
+        while (r > l && !student_worse(&tmp, &stu[r])) {
             r--;
         }
         stu[l] = stu[r];
-        while (r > l && student_equal_or_less(&stu[l], &tmp)) {
+        while (l < r && !student_worse(&stu[l], &tmp)) {
             l++;
         }
         stu[r] = stu[l];
@@ -247,7 +248,7 @@ int quick_sort_partition(Student stu[], int l, int r) {
 }
 
 void quick_sort(Student stu[], int l, int r) {
-    while (l < r) {
+    if (l < r) {
         int pos = quick_sort_partition(stu, l, r);
         quick_sort(stu, l, pos - 1);
         quick_sort(stu, pos + 1, r);
@@ -255,9 +256,40 @@ void quick_sort(Student stu[], int l, int r) {
 }
 
 void list_students(void) {
+    if (!STUDENTS_SET) {
+        puts("错误: 还未输入学生信息!");
+        return;
+    }
     if (!IS_SORTED) {
         puts("正在排序, 请稍等...");
         quick_sort(STUDENTS, 0, (int)STUDENTS_CNT - 1);
+        IS_SORTED = true;
+    }
+    printf("字段顺序: 排名, 学号, 姓名, 加权总成绩, 总成绩");
+    for (size_t i = 0; i < COURSES_CNT; i++) {
+        printf(", %s成绩", COURSES[i].name);
+    }
+    putchar('\n');
+    int cur_rank = 1;
+    int this_cnt = 1;
+    for (size_t i = 0; i < STUDENTS_CNT; i++) {
+        double this_weighted_score = STUDENTS[i].score_with_weight;
+        double next_weighted_score = STUDENTS[i + 1].score_with_weight;
+        printf("排名: %d 学号: %s 姓名: %s 加权总成绩: %.2lf 总成绩: %.2lf",
+               cur_rank, STUDENTS[i].id, STUDENTS[i].name, this_weighted_score,
+               STUDENTS[i].score);
+        if (i + 1 < STUDENTS_CNT &&
+            this_weighted_score == next_weighted_score) {
+            this_cnt++;
+        } else {
+            cur_rank += this_cnt;
+            this_cnt = 1;
+        }
+        for (size_t j = 0; j < COURSES_CNT; j++) {
+            printf(" %s成绩: %.2lf (%.0lf%%)", COURSES[j].name,
+                   DETAILS[STUDENTS[i].detail_id][j], COURSES[j].weight * 100);
+        }
+        putchar('\n');
     }
 }
 
@@ -290,6 +322,9 @@ int main(void) {
             break;
         case 3: // List courses.
             list_courses();
+            break;
+        case 4: // List students.
+            list_students();
             break;
         case 5: // Clear students info.
             clear_students();

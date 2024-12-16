@@ -188,7 +188,7 @@ int set_students(void) {
         return FAILURE;
     }
     STUDENTS = malloc(STUDENTS_CNT * sizeof(Student));
-    DETAILS = malloc(COURSES_CNT * sizeof(double *));
+    DETAILS = malloc(STUDENTS_CNT * sizeof(double *));
     if (STUDENTS == NULL || DETAILS == NULL) {
         puts("糟糕! 无法为学生信息分配内存.");
         puts("您也许需要缩减学生个数或者更换更好的机器.");

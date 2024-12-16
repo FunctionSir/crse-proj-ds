@@ -334,6 +334,10 @@ int main(void) {
             printf("学生成绩管理系统 [版本: %s]\n", VER);
             break;
         case 0: // Exit.
+            clear_students();
+            if (COURSES != NULL) {
+                free(COURSES);
+            }
             puts("Goodbye!");
             return EXIT_SUCCESS;
         }

@@ -2,7 +2,7 @@
  * @Author: FunctionSir
  * @License: AGPLv3
  * @Date: 2024-12-16 15:09:56
- * @LastEditTime: 2024-12-17 09:27:47
+ * @LastEditTime: 2024-12-17 09:34:09
  * @LastEditors: FunctionSir
  * @Description: 哈希表演示
  * @FilePath: /crse-proj-ds/hash-table/main.c
@@ -83,7 +83,7 @@ typedef struct Node {
 } Node;
 #endif
 
-#ifndef ASCII
+#ifdef BASE26
 int convert(char ch) {
     if (ch >= 'a' && ch <= 'z') { // Is lowercase.
         ch -= 32;
@@ -92,6 +92,18 @@ int convert(char ch) {
         return 0;
     }
     return ch - 'A';
+}
+#endif
+
+#ifdef SUM
+int convert(char ch) {
+    if (ch >= 'a' && ch <= 'z') { // Is lowercase.
+        ch -= 32;
+    }
+    if (ch < 'A' || ch > 'Z') {
+        return 0;
+    }
+    return ch - 'A' + 1;
 }
 #endif
 

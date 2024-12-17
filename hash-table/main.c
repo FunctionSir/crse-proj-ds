@@ -2,16 +2,11 @@
  * @Author: FunctionSir
  * @License: AGPLv3
  * @Date: 2024-12-16 15:09:56
- * @LastEditTime: 2024-12-17 09:10:55
+ * @LastEditTime: 2024-12-17 09:27:47
  * @LastEditors: FunctionSir
  * @Description: 哈希表演示
  * @FilePath: /crse-proj-ds/hash-table/main.c
  */
-
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 /*
 Modify this to change conflict handling method.
@@ -30,6 +25,15 @@ Warn: Function SUM or ASCII might cause HUGE performance lose!
 If use the "make.py", don't set it.
 */
 // #define BASE26
+
+// If not defined necessary marcos, Do nothing.
+#if (defined(CHAINING) || defined(LINEAR) || defined(SQUARE)) &&               \
+    ((defined(BASE26) || defined(SUM) || defined(ASCII)))
+
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #ifdef BASE26
 const int BASE = 26;
@@ -294,3 +298,11 @@ int main(void) {
     printf("ASL = %d/%d = %.2lf\n", tot, valid, (double)tot / (double)valid);
     return EXIT_SUCCESS;
 }
+#else
+#include <stdio.h>
+int main(void) {
+    puts("You need to define conflict handler and hash function first!");
+    puts("Use make.py to build, or change some code manually!");
+    return 1;
+}
+#endif

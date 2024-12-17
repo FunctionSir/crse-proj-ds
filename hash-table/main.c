@@ -2,7 +2,7 @@
  * @Author: FunctionSir
  * @License: AGPLv3
  * @Date: 2024-12-16 15:09:56
- * @LastEditTime: 2024-12-17 09:37:31
+ * @LastEditTime: 2024-12-17 09:47:51
  * @LastEditors: FunctionSir
  * @Description: 哈希表演示
  * @FilePath: /crse-proj-ds/hash-table/main.c
@@ -274,7 +274,7 @@ int main(void) {
     memset(hash_table, 0, MOD * sizeof(Node));
 #endif
 #ifndef CHAINING
-    Name *hash_table = (Node *)malloc(TABLE_LEN * sizeof(Name));
+    Name *hash_table = (Name *)malloc(TABLE_LEN * sizeof(Name));
     memset(hash_table, 0, TABLE_LEN * sizeof(Name));
     init_d_list();
 #endif

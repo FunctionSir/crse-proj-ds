@@ -2,7 +2,7 @@
  * @Author: FunctionSir
  * @License: AGPLv3
  * @Date: 2024-12-16 15:09:56
- * @LastEditTime: 2024-12-17 08:41:53
+ * @LastEditTime: 2024-12-17 09:10:55
  * @LastEditors: FunctionSir
  * @Description: 哈希表演示
  * @FilePath: /crse-proj-ds/hash-table/main.c
@@ -142,7 +142,7 @@ int insert(Node *t, Name key) {
             return FAILURE;
         }
     }
-    cur->next = malloc(sizeof(Node));
+    cur->next = (Node *)malloc(sizeof(Node));
     if (cur->next == NULL) {
         printf("无法插入%s: 无法成功分配内存!", key);
         return FAILURE;
@@ -223,7 +223,7 @@ int find(Name *t, Name key) {
 
 #ifdef SQUARE
 void init_d_list(void) {
-    D_LIST = malloc(TABLE_LEN * sizeof(int));
+    D_LIST = (int *)malloc(TABLE_LEN * sizeof(int));
     for (int i = 1; i * i <= (int)TABLE_LEN; i++) {
         D_LIST[D_LIST_LEN++] = i * i;
         D_LIST[D_LIST_LEN++] = -i * i;
@@ -238,7 +238,7 @@ void init_d_list(void) {
 
 #ifdef LINEAR
 void init_d_list(void) {
-    D_LIST = malloc(TABLE_LEN * sizeof(int));
+    D_LIST = (int *)malloc(TABLE_LEN * sizeof(int));
     for (int i = 1; i <= (int)TABLE_LEN; i++) {
         D_LIST[D_LIST_LEN++] = i;
     }
@@ -254,11 +254,11 @@ int main(void) {
 
 // Initialize the hash table (and d list)
 #ifdef CHAINING
-    Node *hash_table = malloc(MOD * sizeof(Node));
+    Node *hash_table = (Node *)malloc(MOD * sizeof(Node));
     memset(hash_table, 0, MOD * sizeof(Node));
 #endif
 #ifndef CHAINING
-    Name *hash_table = malloc(TABLE_LEN * sizeof(Name));
+    Name *hash_table = (Node *)malloc(TABLE_LEN * sizeof(Name));
     memset(hash_table, 0, TABLE_LEN * sizeof(Name));
     init_d_list();
 #endif
@@ -268,7 +268,7 @@ int main(void) {
     puts(TITLE);
     printf("输入您要插入的人名个数: ");
     scanf("%d", &cnt);
-    names_list = malloc((size_t)cnt * sizeof(Name));
+    names_list = (Name *)malloc((size_t)cnt * sizeof(Name));
     if (names_list == NULL) {
         puts("错误: 无法为人名列表分配内存!");
         return EXIT_FAILURE;

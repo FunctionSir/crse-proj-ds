@@ -2,7 +2,7 @@
  * @Author: FunctionSir
  * @License: AGPLv3
  * @Date: 2024-12-16 15:09:56
- * @LastEditTime: 2024-12-17 09:34:09
+ * @LastEditTime: 2024-12-17 09:37:31
  * @LastEditors: FunctionSir
  * @Description: 哈希表演示
  * @FilePath: /crse-proj-ds/hash-table/main.c
@@ -60,7 +60,7 @@ const int MOD = 10007;
 #ifdef SUM
 const int MOD = 1009;
 #endif
-const size_t TABLE_LEN = MOD * 4;
+const size_t TABLE_LEN = MOD * 10;
 #endif
 
 #ifdef SQUARE

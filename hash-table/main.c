@@ -1,3 +1,13 @@
+/*
+ * @Author: FunctionSir
+ * @License: AGPLv3
+ * @Date: 2024-12-16 15:09:56
+ * @LastEditTime: 2024-12-17 08:41:53
+ * @LastEditors: FunctionSir
+ * @Description: 哈希表演示
+ * @FilePath: /crse-proj-ds/hash-table/main.c
+ */
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,16 +18,18 @@ Modify this to change conflict handling method.
 Can be one of "CHAINING", "LINEAR" or "SQUARE".
 Note: CHAINING is the best.
 Warn: Method LINEAR or SQUARE might cause failure when inserting!
+If use the "make.py", don't set it.
 */
-#define CHAINING
+// #define CHAINING
 
 /*
 Modify this to change hash function.
-Can be one of "BASE26" or "SUM" or "ASCII".
+Can be one of "BASE26", "SUM" or "ASCII".
 Note: BASE26 is the best.
 Warn: Function SUM or ASCII might cause HUGE performance lose!
+If use the "make.py", don't set it.
 */
-#define BASE26
+// #define BASE26
 
 #ifdef BASE26
 const int BASE = 26;
@@ -146,7 +158,8 @@ int find(Node *t, Name key) {
     Node *cur = t[h].next;
     while (cur != NULL) {
         if (str_eq(cur->name, key)) {
-            printf("查找到\"%s\", 比较次数: %d.\n", key, cnt);
+            printf("查找到\"%s\", 哈希值: %d, 位置: %p, 比较次数: %d.\n", key,
+                   h, (void *)cur, cnt);
             return cnt;
         }
         cur = cur->next;
@@ -187,11 +200,13 @@ int insert(Name *t, Name key) {
 
 int find(Name *t, Name key) {
     int h = hash(key);
+    int original_hash = h;
     int cnt = 1;
     if (t[h][0] != 0) {
         for (int i = 0, tmp = h; i < (int)D_LIST_LEN; i++, cnt++) {
             if (str_eq(t[h], key)) {
-                printf("查找到\"%s\", 比较次数: %d.\n", key, cnt);
+                printf("查找到\"%s\", 哈希值: %d, 位置: %d, 比较次数: %d.\n",
+                       key, original_hash, h, cnt);
                 return cnt;
             }
             if (tmp + (int)D_LIST[i] >= 0 &&

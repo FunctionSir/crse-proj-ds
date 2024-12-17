@@ -6,6 +6,7 @@ build/
 
 # GCC built binary
 a.out
+hash-table
 
 # Test input and test output
 test.in

@@ -2,7 +2,7 @@
  * @Author: FunctionSir
  * @License: AGPLv3
  * @Date: 2024-12-16 15:09:56
- * @LastEditTime: 2024-12-17 09:47:51
+ * @LastEditTime: 2024-12-17 10:36:18
  * @LastEditors: FunctionSir
  * @Description: 哈希表演示
  * @FilePath: /crse-proj-ds/hash-table/main.c
@@ -154,7 +154,7 @@ int insert(Node *t, Name key) {
         cur = tmp;
         tmp = tmp->next;
         if (str_eq(cur->name, key)) {
-            printf("无法插入%s: 已存在.\n", key);
+            printf("无需插入%s: 已存在.\n", key);
             return FAILURE;
         }
     }
@@ -193,12 +193,12 @@ size_t D_LIST_LEN;
 int insert(Name *t, Name key) {
     int h = hash(key);
     if (t[h][0] != 0 && str_eq(t[h], key)) {
-        printf("无法插入%s: 已存在.\n", key);
+        printf("无需插入%s: 已存在.\n", key);
         return FAILURE;
     }
     for (int i = 0, tmp = h; t[h][0] != 0 && i < (int)D_LIST_LEN; i++) {
         if (str_eq(t[h], key)) {
-            printf("无法插入%s: 已存在.\n", key);
+            printf("无需插入%s: 已存在.\n", key);
             return FAILURE;
         }
         if (tmp + (int)D_LIST[i] >= 0 &&
@@ -292,7 +292,10 @@ int main(void) {
     puts("输入人名(不含空格), 一行一个, 或以空格分隔:");
     for (int i = 0; i < cnt; i++) {
         scanf("%s", names_list[i]);
-        insert(hash_table, names_list[i]);
+        if (insert(hash_table, names_list[i]) == FAILURE) {
+            cnt--;
+            i--;
+        }
     }
     puts("自动化的查找演示:");
     int tot = 0, valid = cnt;

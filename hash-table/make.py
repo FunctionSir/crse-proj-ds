@@ -1,4 +1,12 @@
-#!/bin/python3
+'''
+Author: FunctionSir
+License: AGPLv3
+Date: 2024-12-17 08:36:45
+LastEditTime: 2024-12-17 08:55:07
+LastEditors: FunctionSir
+Description: To make it.
+FilePath: /crse-proj-ds/hash-table/make.py
+'''
 
 import os
 import time

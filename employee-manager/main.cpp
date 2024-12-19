@@ -270,7 +270,7 @@ void Listupdate(Sqlist* L,int x,char y[20])/*跟新员工信息*/
                    strcpy((*--p).address,s);
                    break;
             }
-            p++;
+            p--;
             printf("\n更新成功\n");
             return;
         }
@@ -447,12 +447,22 @@ int main(){
                 printf("\n请输入你要更新的员工的编号:\n");
                 char num[20];
                 scanf(" %s",num);
-                printf("\n请输入你要更新的信息的类型:\n1-编号\n2-姓名\n3-性别\n4-出生年月\n5-学历\n6-职务\n7-电话\n8-住址\n");
-                int type;
-                scanf("%d",&type);
-                printf("\n请输入你要更新的信息:\n");
-                scanf(" %s",s);
-                Listupdate(&sl,type,num);
+                    while(1)
+                    {
+                        printf("\n请输入你要更新的信息的类型:\n1-编号\n2-姓名\n3-性别\n4-出生年月\n5-学历\n6-职务\n7-电话\n8-住址\n9-结束\n");
+                        int type;
+                        scanf("%d",&type);
+                        if(type==9)
+                        {
+                            printf("\n结束更新\n");
+                            break;
+                        }
+                        printf("\n请输入你要更新的信息:\n");
+                        scanf(" %s",s);
+                        Listupdate(&sl,type,num);
+                        if(type==1)
+                            strcpy(num,s);
+                    }
             }
             break;
             case 'C':

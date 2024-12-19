@@ -2,12 +2,13 @@
  * @Author: FunctionSir
  * @License: AGPLv3
  * @Date: 2024-12-16 08:58:16
- * @LastEditTime: 2024-12-19 08:40:00
+ * @LastEditTime: 2024-12-19 09:39:24
  * @LastEditors: FunctionSir
  * @Description: 学生成绩管理系统
- * @FilePath: /crse-proj-ds/student-manager/main.c
+ * @FilePath: /student-manager/main.c
  */
 
+#include <limits.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -55,6 +56,12 @@ typedef struct Student {
     size_t detail_id;
 } Student;
 
+/* Type Student Node */
+typedef struct StudentNode {
+    Student data;
+    struct StudentNode *next;
+} StudentNode;
+
 /* Courses related */
 bool COURSES_SET;
 Course *COURSES;
@@ -62,8 +69,7 @@ size_t COURSES_CNT;
 
 /* Students related */
 bool STUDENTS_SET;
-bool IS_SORTED;
-Student *STUDENTS;
+StudentNode STUDENTS_HEAD;
 double **DETAILS;
 size_t STUDENTS_CNT;
 
@@ -134,6 +140,14 @@ int list_courses(void) {
     return SUCCESS;
 }
 
+void free_chain(StudentNode *head) {
+    if (head == NULL) {
+        return;
+    }
+    free_chain(head->next);
+    free(head);
+}
+
 /* Clear students. */
 int clear_students(void) {
     if (!STUDENTS_SET) {
@@ -149,15 +163,22 @@ int clear_students(void) {
             return FAILURE;
         }
     }
-    free(STUDENTS);
+    free_chain(STUDENTS_HEAD.next);
+    STUDENTS_HEAD.next = NULL;
     for (size_t i = 0; i < STUDENTS_CNT; i++) {
         free(DETAILS[i]);
     }
     free(DETAILS);
     STUDENTS_CNT = 0;
-    IS_SORTED = false;
     STUDENTS_SET = false;
     return SUCCESS;
+}
+
+bool student_better(Student *a, Student *b) {
+    if (a->score_with_weight != b->score_with_weight) {
+        return a->score_with_weight > b->score_with_weight;
+    }
+    return strcmp(a->id, b->id) < 0;
 }
 
 /*
@@ -187,84 +208,100 @@ int set_students(void) {
         puts("错误: 无法清除现有的学生信息.");
         return FAILURE;
     }
-    STUDENTS = malloc(STUDENTS_CNT * sizeof(Student));
     DETAILS = malloc(STUDENTS_CNT * sizeof(double *));
-    if (STUDENTS == NULL || DETAILS == NULL) {
+    if (DETAILS == NULL) {
         puts("糟糕! 无法为学生信息分配内存.");
         puts("您也许需要缩减学生个数或者更换更好的机器.");
-        STUDENTS_SET = false;
-        return FAILURE;
+        exit(EXIT_FAILURE);
     }
     for (size_t i = 0; i < STUDENTS_CNT; i++) {
         DETAILS[i] = malloc(COURSES_CNT * sizeof(double));
         if (DETAILS[i] == NULL) {
             puts("糟糕! 无法为学生信息分配内存.");
             puts("您也许需要缩减学生个数或者更换更好的机器.");
-            STUDENTS_SET = false;
-            return FAILURE;
+            exit(EXIT_FAILURE);
         }
     }
     puts("请按照学号, 姓名(不得有空格), 各科成绩(按上方课程顺序), 来输入数据.");
     puts("学号和姓名均不大于255个英文字符, 各数据间用空格隔开, 每行一个学生.");
+    StudentNode *first = STUDENTS_HEAD.next, *tail = &STUDENTS_HEAD;
+    StudentNode *cur, *before, *tmp_ptr;
+    Student tmp;
     for (size_t i = 0; i < STUDENTS_CNT; i++) {
         printf("[%lu] ", i + 1);
         put_prompt();
-        scanf("%s%s", STUDENTS[i].id, STUDENTS[i].name);
-        STUDENTS[i].detail_id = i;
-        STUDENTS[i].score = 0;
-        STUDENTS[i].score_with_weight = 0;
+        scanf("%s%s", tmp.id, tmp.name);
+        tmp.detail_id = i;
+        tmp.score = 0;
+        tmp.score_with_weight = 0;
         for (size_t j = 0; j < COURSES_CNT; j++) {
             scanf("%lf", &DETAILS[i][j]);
-            STUDENTS[i].score += DETAILS[i][j];
-            STUDENTS[i].score_with_weight += DETAILS[i][j] * COURSES[j].weight;
+            tmp.score += DETAILS[i][j];
+            tmp.score_with_weight += DETAILS[i][j] * COURSES[j].weight;
         }
+        if (first == NULL) { // First node.
+            STUDENTS_HEAD.next = malloc(sizeof(StudentNode));
+            if (STUDENTS_HEAD.next == NULL) {
+                puts("糟糕! 无法为学生信息分配内存.");
+                puts("您也许需要缩减学生个数或者更换更好的机器.");
+                exit(EXIT_FAILURE);
+            }
+            first = STUDENTS_HEAD.next;
+            tail = STUDENTS_HEAD.next;
+            first->next = NULL;
+            first->data = tmp;
+            continue;
+        }
+        if (student_better(&tmp, &first->data)) { // If the student is the best.
+            tmp_ptr = malloc(sizeof(StudentNode));
+            if (tmp_ptr == NULL) {
+                puts("糟糕! 无法为学生信息分配内存.");
+                puts("您也许需要缩减学生个数或者更换更好的机器.");
+                exit(EXIT_FAILURE);
+            }
+            STUDENTS_HEAD.next = tmp_ptr;
+            STUDENTS_HEAD.next->next = first;
+            first = STUDENTS_HEAD.next;
+            first->data = tmp;
+            continue;
+        }
+        if (student_better(&tail->data, &tmp)) { // If the student is the worst.
+            tail->next = malloc(sizeof(StudentNode));
+            if (tail->next == NULL) {
+                puts("糟糕! 无法为学生信息分配内存.");
+                puts("您也许需要缩减学生个数或者更换更好的机器.");
+                exit(EXIT_FAILURE);
+            }
+            tail = tail->next;
+            tail->next = NULL;
+            tail->data = tmp;
+            continue;
+        }
+        before = NULL;
+        cur = first;
+        while (student_better(&cur->data, &tmp)) {
+            before = cur;
+            cur = cur->next;
+        }
+        tmp_ptr = malloc(sizeof(StudentNode));
+        if (tmp_ptr == NULL) {
+            puts("糟糕! 无法为学生信息分配内存.");
+            puts("您也许需要缩减学生个数或者更换更好的机器.");
+            exit(EXIT_FAILURE);
+        }
+        before->next = tmp_ptr;
+        tmp_ptr->next = cur;
+        tmp_ptr->data = tmp;
     }
     STUDENTS_SET = true;
     puts("学生信息已成功输入.");
     return SUCCESS;
 }
 
-bool student_better(Student *a, Student *b) {
-    if (a->score_with_weight != b->score_with_weight) {
-        return a->score_with_weight > b->score_with_weight;
-    }
-    return strcmp(a->id, b->id) < 0;
-}
-
-int quick_sort_partition(Student stu[], int l, int r) {
-    Student tmp = stu[l];
-    while (l < r) {
-        while (r > l && !student_better(&stu[r], &tmp)) {
-            r--;
-        }
-        stu[l] = stu[r];
-        while (l < r && !student_better(&tmp, &stu[l])) {
-            l++;
-        }
-        stu[r] = stu[l];
-    }
-    stu[l] = tmp;
-    return l;
-}
-
-/* Quick sort */
-void quick_sort(Student stu[], int l, int r) {
-    if (l < r) {
-        int pos = quick_sort_partition(stu, l, r);
-        quick_sort(stu, l, pos - 1);
-        quick_sort(stu, pos + 1, r);
-    }
-}
-
 void list_students(void) {
     if (!STUDENTS_SET) {
         puts("错误: 还未输入学生信息!");
         return;
-    }
-    if (!IS_SORTED) { // If not sorted yet, sort it.
-        puts("正在排序, 请稍等...");
-        quick_sort(STUDENTS, 0, (int)STUDENTS_CNT - 1);
-        IS_SORTED = true;
     }
     printf("字段顺序: 排名, 学号, 姓名, 加权总成绩, 总成绩");
     for (size_t i = 0; i < COURSES_CNT; i++) {
@@ -273,14 +310,16 @@ void list_students(void) {
     putchar('\n');
     int cur_rank = 1;
     int this_cnt = 1;
-    for (size_t i = 0; i < STUDENTS_CNT; i++) {
-        double this_weighted_score = STUDENTS[i].score_with_weight;
-        double next_weighted_score = STUDENTS[i + 1].score_with_weight;
+    StudentNode *cur = STUDENTS_HEAD.next;
+    while (cur != NULL) {
+        double this_weighted_score = cur->data.score_with_weight;
+        double next_weighted_score = (cur->next != NULL)
+                                         ? (cur->next->data.score_with_weight)
+                                         : this_weighted_score - 1;
         printf("排名: %d 学号: %s 姓名: %s 加权总成绩: %.2lf 总成绩: %.2lf",
-               cur_rank, STUDENTS[i].id, STUDENTS[i].name, this_weighted_score,
-               STUDENTS[i].score);
-        if (i + 1 < STUDENTS_CNT &&
-            this_weighted_score == next_weighted_score) {
+               cur_rank, cur->data.id, cur->data.name, this_weighted_score,
+               cur->data.score);
+        if (this_weighted_score == next_weighted_score) {
             this_cnt++;
         } else {
             cur_rank += this_cnt;
@@ -288,9 +327,10 @@ void list_students(void) {
         }
         for (size_t j = 0; j < COURSES_CNT; j++) {
             printf(" %s成绩: %.2lf (%.0lf%%)", COURSES[j].name,
-                   DETAILS[STUDENTS[i].detail_id][j], COURSES[j].weight * 100);
+                   DETAILS[cur->data.detail_id][j], COURSES[j].weight * 100);
         }
         putchar('\n');
+        cur = cur->next;
     }
 }
 

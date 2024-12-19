@@ -1,0 +1,13 @@
+# Ignore VSCode related files
+.vscode/
+
+# Ignore builds
+build/
+
+# GCC built binary
+a.out
+employee-manager
+
+# Test input and test output
+test.in
+test.out

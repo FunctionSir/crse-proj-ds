@@ -1,16 +1,50 @@
 #!/bin/python3
+
+'''
+Author: FunctionSir
+License: AGPLv3
+Date: 2024-12-19 11:40:47
+LastEditTime: 2024-12-19 14:42:35
+LastEditors: FunctionSir
+Description: Start to test or auto test.
+FilePath: /crse-proj-ds/hash-table/start
+'''
+
 import os
-import platform
+import time
 print("哈希函数和冲突处理测试程序")
-choice = int(input("输入0来终止测试, 1来继续测试, -1来清屏: "))
+choice = int(input("输入0来终止测试, 1来继续测试, -1来自动测试, -2来清屏: "))
 while choice:
     if choice == -1:
-        if platform.system() == "Windows":
-            os.system("cls")
-        else:
-            os.system("clear")
+        test_data_path = input("输入测试数据的保存路径: ")
+        data_amount = input("输入测试数据的量: ")
+        os.system("echo "+data_amount +
+                  " | python test-data-gen.py > "+test_data_path)
+        print("[开始自动测试]", end="\n\n")
+        hash_functions_list = ["BASE26", "SUM", "ASCII"]
+        conflit_handlers_list = ["CHAINING", "LINEAR", "SQUARE"]
+        for hash_func in hash_functions_list:
+            for confilt_handler in conflit_handlers_list:
+                print("[[哈希函数: "+hash_func+" 冲突处理: "+confilt_handler+"]]")
+                os.system("echo -e \""+hash_func+"\\n" +
+                          confilt_handler+"\" | make > tmp 2> tmp")
+                begin = time.time_ns()
+                os.system("./hash-table < "+test_data_path+" > tmp 2> tmp")
+                end = time.time_ns()
+                print("数据量: "+data_amount+" 运行用时: " +
+                      str((end-begin)/1000/1000)+"ms")
+                os.system("tail -n 3 tmp")
+                print()
+        os.system("rm tmp")
+        os.system("make clean")
+        os.system("rm "+test_data_path)
+        print("\n[自动测试结束]")
+        choice = int(input("输入0来终止测试, 1来继续测试, -1来自动测试, -2来清屏: "))
+        continue
+    if choice == -2:
+        os.system("clear")
         print("哈希函数和冲突处理测试程序")
-        choice = int(input("输入0来终止测试, 1来继续测试, -1来清屏: "))
+        choice = int(input("输入0来终止测试, 1来继续测试, -1来自动测试, -2来清屏: "))
         continue
     os.system("make clean")
     os.system("make")

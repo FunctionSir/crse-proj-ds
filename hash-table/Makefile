@@ -2,4 +2,4 @@ default:
 	@python3 make.py
 
 clean:
-	rm hash-table
+	@rm -f hash-table

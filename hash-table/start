@@ -1,0 +1,36 @@
+#!/bin/python3
+
+import os
+import platform
+
+print("哈希函数和冲突处理测试程序")
+choice = int(input("输入0来终止测试, 1来继续测试, -1来清屏: "))
+print()
+while choice:
+
+    if choice == -1:
+        if platform.system() == "Windows":
+            os.system("cls")
+        else:
+            os.system("clear")
+        print("哈希函数和冲突处理测试程序")
+        choice = int(input("输入0来终止测试, 1来继续测试, -1来清屏: "))
+        continue
+
+    os.system("make clean")
+    os.system("make")
+    print("正在运行编译得到的二进制文件...")
+    print()
+    os.system("./hash-table")
+    print()
+    print("运行已停止.")
+
+    print()
+    choice = int(input("输入0来终止测试, 1来继续测试, -1来清屏: "))
+    print()
+
+print()
+
+clean = int(input("若要保留构建得到的程序, 输入0, 否则输入1: "))
+if clean:
+    os.system("make clean")

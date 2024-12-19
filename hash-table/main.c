@@ -2,7 +2,7 @@
  * @Author: FunctionSir
  * @License: AGPLv3
  * @Date: 2024-12-16 15:09:56
- * @LastEditTime: 2024-12-19 08:21:57
+ * @LastEditTime: 2024-12-19 11:35:53
  * @LastEditors: FunctionSir
  * @Description: 哈希表演示
  * @FilePath: /crse-proj-ds/hash-table/main.c
@@ -49,7 +49,7 @@ const int MOD = 10007;
 #ifdef SUM
 const int MOD = 1009;
 #endif
-const char *TITLE = "哈希表演示程序(拉链法)";
+const char *TITLE = "哈希表程序(拉链法)";
 #else
 #ifdef BASE26
 const int MOD = 1000003;
@@ -64,11 +64,11 @@ const size_t TABLE_LEN = MOD * 10;
 #endif
 
 #ifdef SQUARE
-const char *TITLE = "哈希表演示程序(二次探测再散列)";
+const char *TITLE = "哈希表程序(二次探测再散列)";
 #endif
 
 #ifdef LINEAR
-const char *TITLE = "哈希表演示程序(线性探测再散列)";
+const char *TITLE = "哈希表程序(线性探测再散列)";
 #endif
 
 const int SUCCESS = 1;

@@ -3,4 +3,7 @@
 
 # Ignore builds
 build/
+
+# GCC built binary
 a.out
+student-manager

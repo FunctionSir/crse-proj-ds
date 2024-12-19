@@ -2,7 +2,7 @@
 Author: FunctionSir
 License: AGPLv3
 Date: 2024-12-17 08:36:45
-LastEditTime: 2024-12-17 08:55:07
+LastEditTime: 2024-12-19 09:51:41
 LastEditors: FunctionSir
 Description: To make it.
 FilePath: /crse-proj-ds/hash-table/make.py
@@ -32,6 +32,6 @@ if hash_function not in hash_functions_list:
 print("Start to build...")
 begin = time.time_ns()
 os.system("gcc main.c"+" -D "+conflit_handler +
-          " -D "+hash_function+" -o "+out_file)
+          " -D "+hash_function+" -O3 -o "+out_file)
 end = time.time_ns()
 print("Done. Used "+str((end-begin)/1000/1000)+"ms.")

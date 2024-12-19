@@ -2,10 +2,10 @@
  * @Author: FunctionSir
  * @License: AGPLv3
  * @Date: 2024-12-16 08:58:16
- * @LastEditTime: 2024-12-19 09:39:24
+ * @LastEditTime: 2024-12-19 10:06:40
  * @LastEditors: FunctionSir
  * @Description: 学生成绩管理系统
- * @FilePath: /student-manager/main.c
+ * @FilePath: /crse-proj-ds/student-manager/main.c
  */
 
 #include <limits.h>
@@ -352,7 +352,7 @@ int main(void) {
 
         // Get choice //
         put_prompt();
-        if (scanf("%hd", &choice) == EOF) {
+        if (scanf("%hd", &choice) != 1) {
             putchar('\n');
             exit(EXIT_SUCCESS);
         };

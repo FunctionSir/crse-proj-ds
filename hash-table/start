@@ -4,7 +4,7 @@
 Author: FunctionSir
 License: AGPLv3
 Date: 2024-12-19 11:40:47
-LastEditTime: 2024-12-19 14:42:35
+LastEditTime: 2024-12-19 15:07:54
 LastEditors: FunctionSir
 Description: Start to test or auto test.
 FilePath: /crse-proj-ds/hash-table/start
@@ -16,7 +16,7 @@ print("哈希函数和冲突处理测试程序")
 choice = int(input("输入0来终止测试, 1来继续测试, -1来自动测试, -2来清屏: "))
 while choice:
     if choice == -1:
-        test_data_path = input("输入测试数据的保存路径: ")
+        test_data_path = input("输入测试数据的暂存路径: ")
         data_amount = input("输入测试数据的量: ")
         os.system("echo "+data_amount +
                   " | python test-data-gen.py > "+test_data_path)

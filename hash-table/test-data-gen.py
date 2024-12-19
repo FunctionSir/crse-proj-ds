@@ -2,9 +2,9 @@
 Author: FunctionSir
 License: AGPLv3
 Date: 2024-12-17 08:52:03
-LastEditTime: 2024-12-17 09:43:16
+LastEditTime: 2024-12-19 08:18:24
 LastEditors: FunctionSir
-Description: To gen data for test.
+Description: To gen data for testing.
 FilePath: /crse-proj-ds/hash-table/test-data-gen.py
 '''
 

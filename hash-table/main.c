@@ -2,7 +2,7 @@
  * @Author: FunctionSir
  * @License: AGPLv3
  * @Date: 2024-12-16 15:09:56
- * @LastEditTime: 2024-12-17 10:36:18
+ * @LastEditTime: 2024-12-19 08:21:57
  * @LastEditors: FunctionSir
  * @Description: 哈希表演示
  * @FilePath: /crse-proj-ds/hash-table/main.c
@@ -26,7 +26,7 @@ If use the "make.py", don't set it.
 */
 // #define BASE26
 
-// If not defined necessary marcos, Do nothing.
+// If defined necessary marcos, compile.
 #if (defined(CHAINING) || defined(LINEAR) || defined(SQUARE)) &&               \
     ((defined(BASE26) || defined(SUM) || defined(ASCII)))
 
@@ -85,10 +85,10 @@ typedef struct Node {
 
 #ifdef BASE26
 int convert(char ch) {
-    if (ch >= 'a' && ch <= 'z') { // Is lowercase.
+    if (ch >= 'a' && ch <= 'z') { // Convert lower to upper.
         ch -= 32;
     }
-    if (ch < 'A' || ch > 'Z') {
+    if (ch < 'A' || ch > 'Z') { // Not A~Z or a~z.
         return 0;
     }
     return ch - 'A';
@@ -97,10 +97,10 @@ int convert(char ch) {
 
 #ifdef SUM
 int convert(char ch) {
-    if (ch >= 'a' && ch <= 'z') { // Is lowercase.
+    if (ch >= 'a' && ch <= 'z') { // Convert lower to upper.
         ch -= 32;
     }
-    if (ch < 'A' || ch > 'Z') {
+    if (ch < 'A' || ch > 'Z') { // Not A~Z or a~z.
         return 0;
     }
     return ch - 'A' + 1;
@@ -313,7 +313,7 @@ int main(void) {
     printf("ASL = %d/%d = %.2lf\n", tot, valid, (double)tot / (double)valid);
     return EXIT_SUCCESS;
 }
-#else
+#else // If leak of compiler args.
 #include <stdio.h>
 int main(void) {
     puts("You need to define conflict handler and hash function first!");

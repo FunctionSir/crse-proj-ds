@@ -2,10 +2,10 @@
  * @Author: FunctionSir
  * @License: AGPLv3
  * @Date: 2024-12-16 08:58:16
- * @LastEditTime: 2024-12-16 15:02:07
+ * @LastEditTime: 2024-12-19 08:40:00
  * @LastEditors: FunctionSir
  * @Description: 学生成绩管理系统
- * @FilePath: /student-manager/main.c
+ * @FilePath: /crse-proj-ds/student-manager/main.c
  */
 
 #include <math.h>
@@ -247,6 +247,7 @@ int quick_sort_partition(Student stu[], int l, int r) {
     return l;
 }
 
+/* Quick sort */
 void quick_sort(Student stu[], int l, int r) {
     if (l < r) {
         int pos = quick_sort_partition(stu, l, r);
@@ -260,7 +261,7 @@ void list_students(void) {
         puts("错误: 还未输入学生信息!");
         return;
     }
-    if (!IS_SORTED) {
+    if (!IS_SORTED) { // If not sorted yet, sort it.
         puts("正在排序, 请稍等...");
         quick_sort(STUDENTS, 0, (int)STUDENTS_CNT - 1);
         IS_SORTED = true;
@@ -311,7 +312,10 @@ int main(void) {
 
         // Get choice //
         put_prompt();
-        scanf("%hd", &choice);
+        if (scanf("%hd", &choice) == EOF) {
+            putchar('\n');
+            exit(EXIT_SUCCESS);
+        };
 
         switch (choice) {
         case 1: // Set courses.

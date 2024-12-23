@@ -1,0 +1,9 @@
+# Ignore VSCode related files
+.vscode/
+
+# Ignore builds
+build/
+
+# GCC built binary
+a.out
+huffman

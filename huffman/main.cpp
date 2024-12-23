@@ -2,7 +2,7 @@
  * @Author: FunctionSir
  * @License: AGPLv3
  * @Date: 2024-12-23 08:23:59
- * @LastEditTime: 2024-12-23 19:12:00
+ * @LastEditTime: 2024-12-23 21:09:59
  * @LastEditors: FunctionSir
  * @Description: -
  * @FilePath: /crse-proj-ds/huffman/main.cpp
@@ -181,7 +181,7 @@ void init(void) {
         }
         reset();
     }
-    cout << "请选择字符集和频度数据来源:" << endl;
+    cout << "请选择字符集和频数数据来源:" << endl;
     cout << "[F]ile  从文件读入" << endl;
     cout << "[I]nput   手动输入" << endl;
     cout << "[A]uto    自动统计" << endl;
@@ -211,15 +211,16 @@ void init(void) {
             int cur_freq = -1;
             freq_file >> cur_ch >> cur_freq;
             if (cur_ch == 0 || cur_freq <= 0) {
-                cout << "数据非法: 存在非法的字符频度条目或条目数量不够!"
+                cout << "数据非法: 存在非法的字符频数条目或条目数量不够!"
                      << endl;
                 return;
             }
             if (CHARSET.count(cur_ch)) {
-                cout << "数据非法: 存在重复的字符频度条目!" << endl;
+                cout << "数据非法: 存在重复的字符频数条目!" << endl;
                 return;
             }
             FREQ_INFO.insert({(char)cur_ch, cur_freq});
+            CHARSET.insert((char)cur_ch);
         }
         freq_file.close();
         break;
@@ -231,26 +232,29 @@ void init(void) {
             cout << "数据非法: 字符集大小不合法!" << endl;
             return;
         }
-        cout << "接下来, 输入字符的ASCII及其频度, 每行一组, "
-                "字符和频度间用空格隔开:"
+        cout << "接下来, 输入字符及其频数, 每行一组, "
+                "字符和频数间用空格隔开:"
              << endl;
         for (int i = 1; i <= charset_size; i++) {
-            int cur_ch = 0;
+            char cur_ch = 0;
             int cur_freq = -1;
             cout << "[" << i << "] "; // Line number
             put_prompt();
-            cin >> cur_ch >> cur_freq;
+            cin.get();
+            cin.get(cur_ch);
+            cin >> cur_freq;
             if (cur_ch == 0 || cur_freq <= 0) {
-                cout << "数据非法: 字符频度条目非法或条目数量不够!" << endl;
+                cout << "数据非法: 字符频数条目非法或条目数量不够!" << endl;
                 cout << "警告: 已忽略非法条目!" << endl;
                 continue;
             }
             if (CHARSET.count(cur_ch)) {
-                cout << "数据非法: 存在重复的字符频度条目!" << endl;
+                cout << "数据非法: 存在重复的字符频数条目!" << endl;
                 cout << "警告: 已忽略非法条目!" << endl;
                 continue;
             }
             FREQ_INFO.insert({cur_ch, cur_freq});
+            CHARSET.insert(cur_ch);
         }
         cout << "要输出您的输入到文件么?" << endl;
         cout << "要输出, 输入Y或y, 否则, 输入其他内容." << endl;
@@ -294,7 +298,7 @@ void init(void) {
                 cout << "错误: 文件打开失败!" << endl;
                 return;
             }
-            while (freq_file >> cur_char) {
+            while (freq_file.get(cur_char)) {
                 stat[cur_char]++;
                 CHARSET.insert(cur_char);
             }
@@ -358,8 +362,8 @@ void stat(void) {
     cout << "字符集大小: " << FREQ_INFO.size() << endl;
     cout << "详细信息:" << endl;
     for (auto x : FREQ_INFO) {
-        cout << "字符\"" << (char)x.ch << "\"的频数是: " << x.freq << "."
-             << endl;
+        cout << "字符: \"" << (char)x.ch << "\" ASCII: " << x.ch
+             << " 频数: " << x.freq << "." << endl;
     }
 }
 
@@ -435,6 +439,7 @@ void build(void) {
         on_build.insert({tmp});
     }
     TREE = *on_build.begin();
+    BUILT = true;
     cout << "要保存哈夫曼树到文件么?" << endl;
     cout << "要保存, 输入Y或y, 否则, 输入其他内容." << endl;
     put_prompt();
@@ -609,6 +614,15 @@ void gen_code(TreeNode *t, string before) {
     }
 }
 
+void view_code(void) {
+    cout << "编码信息如下:" << endl;
+    cout << "字符集大小: " << CHARSET.size() << endl;
+    for (auto x : CODE) {
+        cout << "\"" << (char)x.first << "\" (" << x.first << ") -> "
+             << x.second << endl;
+    }
+}
+
 void encode(void) {
     char choice;
     if (!CODE_GENED) {
@@ -616,7 +630,8 @@ void encode(void) {
         gen_code(TREE.ptr, "");
         CODE_GENED = true;
     }
-    cout << "您要编码什么?" << endl;
+    view_code();
+    cout << "您想要编码些什么?" << endl;
     cout << "[F]ile        文件内容" << endl;
     cout << "[I]nput 编码输入的内容" << endl;
     put_prompt();
@@ -635,7 +650,7 @@ void encode(void) {
             return;
         }
         char cur_char;
-        while (in_file >> cur_char) {
+        while (in_file.get(cur_char)) {
             if (!CHARSET.count(cur_char)) {
                 cout << "警告: 字符\"" << cur_char
                      << "\"不存在于给定的字符集中! 已忽略!" << endl;
@@ -691,9 +706,10 @@ void encode(void) {
 
 void print_encode_result(void) {
     int per_line, now = 0;
-    cout << "每行您希望有多少个字符?" << endl;
+    cout << "您希望每行最多有多少个字符?" << endl;
     put_prompt();
     cin >> per_line;
+    cout << "编码结果如下:" << endl << endl;
     for (auto ch : ENCODED) {
         cout << ch;
         now++;
@@ -702,6 +718,7 @@ void print_encode_result(void) {
             now = 0;
         }
     }
+    cout << endl;
 }
 
 void decode(void) {

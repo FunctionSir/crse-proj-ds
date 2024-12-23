@@ -2,7 +2,7 @@
  * @Author: FunctionSir
  * @License: AGPLv3
  * @Date: 2024-12-23 08:23:59
- * @LastEditTime: 2024-12-23 17:08:08
+ * @LastEditTime: 2024-12-23 19:12:00
  * @LastEditors: FunctionSir
  * @Description: -
  * @FilePath: /crse-proj-ds/huffman/main.cpp
@@ -38,6 +38,13 @@ using namespace std;
 #define ESCAPE_IF_NOT_ENCODED                                                  \
     if (!IS_ENCODED) {                                                         \
         cout << "您还没有编码过!" << endl;                                     \
+        continue;                                                              \
+    }
+
+/* If not decoded, escape */
+#define ESCAPE_IF_NOT_DECODED                                                  \
+    if (!IS_DECODED) {                                                         \
+        cout << "您还没有解码过!" << endl;                                     \
         continue;                                                              \
     }
 
@@ -92,6 +99,7 @@ multiset<Freq> FREQ_INFO;
 set<int> CHARSET;
 map<int, string> CODE;
 string ENCODED;
+string DECODED;
 
 /* Input prompt */
 string PROMPT = ">>> ";
@@ -107,6 +115,9 @@ bool CODE_GENED = false;
 
 /* Encoded yet */
 bool IS_ENCODED = false;
+
+/* Decoded yet */
+bool IS_DECODED = false;
 
 /* Put prompt */
 void put_prompt(void) {
@@ -149,6 +160,7 @@ void reset() {
     BUILT = false;
     IS_ENCODED = false;
     ENCODED = "";
+    IS_DECODED = false;
     free_tree(TREE.ptr);
     TREE = {NULL};
     FREQ_INFO.clear();
@@ -692,13 +704,100 @@ void print_encode_result(void) {
     }
 }
 
+void decode(void) {
+    TreeNode *cur = TREE.ptr;
+    char choice;
+    IS_DECODED = false;
+    DECODED = "";
+    cout << "您要解码什么?" << endl;
+    cout << "[F]ile        文件内容" << endl;
+    cout << "[I]nput 解码输入的内容" << endl;
+    put_prompt();
+    cin >> choice;
+    switch (CONVERTED_CHOICE) {
+    case 'F': {
+        string path;
+        cout << "请输入文件的路径:" << endl;
+        put_prompt();
+        getline(cin, _);
+        getline(cin, path);
+        ifstream in_file(path);
+        if (!in_file.is_open()) {
+            cout << "错误: 无法打开文件!";
+            return;
+        }
+        char cur_bit;
+        while (in_file >> cur_bit) {
+            if (cur_bit == '0') {
+                cur = cur->left;
+            }
+            if (cur_bit == '1') {
+                cur = cur->right;
+            }
+            if (cur->ch != 0) {
+                DECODED += (char)cur->ch;
+                cur = TREE.ptr;
+            }
+        }
+    } break;
+    case 'I': {
+        string text;
+        cout << "请输入待解码的信息(按Enter结束):" << endl;
+        put_prompt();
+        getline(cin, _);
+        getline(cin, text);
+        for (auto cur_bit : text) {
+            if (cur_bit == '0') {
+                cur = cur->left;
+            }
+            if (cur_bit == '1') {
+                cur = cur->right;
+            }
+            if (cur->ch != 0) {
+                DECODED += (char)cur->ch;
+                cur = TREE.ptr;
+            }
+        }
+    } break;
+    }
+    IS_DECODED = true;
+    if (cur->ch != 0) {
+        cout << "警告: 解码时出现错误, 可能是有不合法的序列或文件已损坏!"
+             << endl;
+    }
+    cout << "解码所得:" << endl << endl;
+    cout << DECODED << endl << endl;
+    cout << "要输出结果到文件么?";
+    cout << "要输出, 输入Y或y, 否则, 输入其他内容." << endl;
+    put_prompt();
+    cin >> choice;
+    if (CONVERTED_CHOICE != 'Y') {
+        return;
+    }
+    string path;
+    cout << "请输入文件的路径:" << endl;
+    put_prompt();
+    getline(cin, _);
+    getline(cin, path);
+    ofstream file_out(path);
+    file_out << DECODED;
+    file_out.close();
+}
+
+void print_decode_result(void) {
+    cout << "解码所得:" << endl << endl;
+    cout << DECODED << endl << endl;
+}
+
 int main(void) {
     cout << "哈夫曼编码解码程序 [ Ver " << VER << " ]" << endl;
     while (true) {
         char choice = 0;
         print_menu();
         put_prompt();
-        cin >> choice;
+        if (!(cin >> choice)) {
+            exit(EXIT_SUCCESS);
+        }
         switch (CONVERTED_CHOICE) {
         case 'I': // Init
             init();
@@ -730,8 +829,16 @@ int main(void) {
             ESCAPE_IF_NOT_ENCODED
             print_encode_result();
             break;
-        case 'D':
+        case 'D': // Decode
             ESCAPE_IF_NOT_INITIALIZED
+            ESCAPE_IF_NOT_BUILT
+            decode();
+            break;
+        case 'O': // Output
+            ESCAPE_IF_NOT_INITIALIZED
+            ESCAPE_IF_NOT_BUILT
+            ESCAPE_IF_NOT_DECODED
+            print_decode_result();
             break;
         case 'C':
             clear_screen();

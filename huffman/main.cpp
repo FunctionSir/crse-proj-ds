@@ -2,7 +2,7 @@
  * @Author: FunctionSir
  * @License: AGPLv3
  * @Date: 2024-12-23 08:23:59
- * @LastEditTime: 2024-12-23 10:27:59
+ * @LastEditTime: 2024-12-23 10:35:53
  * @LastEditors: FunctionSir
  * @Description: -
  * @FilePath: /crse-proj-ds/huffman/main.cpp
@@ -274,6 +274,15 @@ void init(void) {
     INITIALIZED = true;
 }
 
+void stat(void) {
+    cout << "字符集和字符频数信息:" << endl;
+    cout << "字符集大小: " << FREQ_INFO.size() << endl;
+    cout << "详细信息:" << endl;
+    for (auto x : FREQ_INFO) {
+        cout << "字符\"" << x.ch << "\"的频数是: " << x.freq << "." << endl;
+    }
+}
+
 int main(void) {
     cout << "哈夫曼编码解码程序 [ Ver " << VER << " ]" << endl;
     while (true) {
@@ -287,6 +296,8 @@ int main(void) {
             break;
         case 'S':
             ESCAPE_IF_NOT_INITIALIZED
+            stat();
+            break;
         case 'E':
             ESCAPE_IF_NOT_INITIALIZED
             break;

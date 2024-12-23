@@ -2,18 +2,21 @@
  * @Author: FunctionSir
  * @License: AGPLv3
  * @Date: 2024-12-23 08:23:59
- * @LastEditTime: 2024-12-23 11:24:52
+ * @LastEditTime: 2024-12-23 15:07:40
  * @LastEditors: FunctionSir
  * @Description: -
  * @FilePath: /crse-proj-ds/huffman/main.cpp
  */
 #include <cstddef>
+#include <cstdio>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <set>
 #include <string>
+#include <utility>
+#include <vector>
 using namespace std;
 
 /* If not initialized, escape */
@@ -85,7 +88,8 @@ struct TreeNodeBox {
 
 TreeNodeBox TREE = {NULL};
 multiset<Freq> FREQ_INFO;
-set<char> USED_CHAR;
+set<char> CHARSET;
+map<char, string> CODE;
 
 /* Input prompt */
 string PROMPT = ">>> ";
@@ -95,6 +99,9 @@ bool INITIALIZED = false;
 
 /* Tree built yet */
 bool BUILT = false;
+
+/* Code gened yet */
+bool CODE_GENED = false;
 
 /* Encoded yet */
 bool ENCODED = false;
@@ -111,6 +118,7 @@ void print_menu(void) {
     cout << "[I]nit           初始化" << endl;
     cout << "[S]tat       字符集信息" << endl;
     cout << "[B]uild    构建哈夫曼树" << endl;
+    cout << "[L]oad     加载哈夫曼树" << endl;
     cout << "[T]ree     输出哈夫曼树" << endl;
     cout << "[E]ncode           编码" << endl;
     cout << "[P]rint    输出编码结果" << endl;
@@ -158,7 +166,7 @@ void init(void) {
             return;
         }
         FREQ_INFO.clear();
-        USED_CHAR.clear();
+        CHARSET.clear();
         INITIALIZED = false;
         for (int i = 0; i < charset_size; i++) {
             char cur_ch = 0;
@@ -169,7 +177,7 @@ void init(void) {
                      << endl;
                 return;
             }
-            if (USED_CHAR.count(cur_ch)) {
+            if (CHARSET.count(cur_ch)) {
                 cout << "数据非法: 存在重复的字符频度条目!" << endl;
                 return;
             }
@@ -186,7 +194,7 @@ void init(void) {
             return;
         }
         FREQ_INFO.clear();
-        USED_CHAR.clear();
+        CHARSET.clear();
         INITIALIZED = false;
         cout << "接下来, 输入字符及其频度, 每行一组, 字符和频度间用空格隔开:"
              << endl;
@@ -201,7 +209,7 @@ void init(void) {
                 cout << "警告: 已忽略非法条目!" << endl;
                 continue;
             }
-            if (USED_CHAR.count(cur_ch)) {
+            if (CHARSET.count(cur_ch)) {
                 cout << "数据非法: 存在重复的字符频度条目!" << endl;
                 cout << "警告: 已忽略非法条目!" << endl;
                 continue;
@@ -236,7 +244,7 @@ void init(void) {
         put_prompt();
         cin >> choice;
         FREQ_INFO.clear();
-        USED_CHAR.clear();
+        CHARSET.clear();
         INITIALIZED = false;
         switch (CONVERTED_CHOICE) {
         case 'F': {
@@ -253,6 +261,7 @@ void init(void) {
             }
             while (freq_file >> cur_char) {
                 stat[cur_char]++;
+                CHARSET.insert(cur_char);
             }
             for (auto x : stat) {
                 FREQ_INFO.insert({x.first, x.second});
@@ -268,6 +277,7 @@ void init(void) {
             map<char, int> stat;
             for (auto ch : text) {
                 stat[ch]++;
+                CHARSET.insert(ch);
             }
             for (auto x : stat) {
                 FREQ_INFO.insert({x.first, x.second});
@@ -328,6 +338,28 @@ void free_tree(TreeNode *tree) {
         free_tree(tree->right);
     }
     free(tree);
+}
+
+/* Serialize, convert a tree to a string */
+string serialize(TreeNode *tree, int &cur_id) {
+    string result = "", l_result = "", r_result = "";
+    result += to_string(cur_id) + " " + to_string(tree->ch) + " " +
+              to_string(tree->freq) + " ";
+    if (tree->left != NULL) {
+        result += to_string(++cur_id) + " ";
+        l_result = serialize(tree->left, cur_id);
+    } else {
+        result += "0 ";
+    }
+    if (tree->right != NULL) {
+        result += to_string(++cur_id) + "\n";
+        r_result = serialize(tree->right, cur_id);
+    } else {
+        result += "0\n";
+    }
+    result += l_result;
+    result += r_result;
+    return result;
 }
 
 /* Build the tree */
@@ -392,10 +424,95 @@ void build(void) {
             cout << "错误: 无法打开或创建输出文件!" << endl;
             return;
         }
-        // SAVE //
-        // In dev... //
+        int node_cnt = 1;
+        string result = serialize(TREE.ptr, node_cnt);
+        outstream << node_cnt << endl;
+        outstream << result;
         outstream.close();
     }
+}
+
+void load(void) {
+    char choice;
+    if (INITIALIZED) {
+        cout << "看起来您已经初始化过了, 要继续么?" << endl;
+        cout << "要继续, 输入Y或y, 否则, 输入其他内容." << endl;
+        put_prompt();
+        cin >> choice;
+        if (CONVERTED_CHOICE != 'Y') {
+            return;
+        }
+    }
+    if (BUILT) {
+        cout << "看起来您已经构建过哈夫曼树了, 要继续么?" << endl;
+        cout << "要继续, 输入Y或y, 否则, 输入其他内容." << endl;
+        put_prompt();
+        cin >> choice;
+        if (CONVERTED_CHOICE != 'Y') {
+            return;
+        }
+        free_tree(TREE.ptr);
+        BUILT = false;
+        TREE = {NULL};
+    }
+    string path;
+    cout << "请输入树文件的路径:" << endl;
+    put_prompt();
+    getline(cin, _);
+    getline(cin, path);
+    ifstream file_in(path);
+    if (!file_in.is_open()) {
+        cout << "错误: 无法打开文件!" << endl;
+        return;
+    }
+    int node_cnt = -1;
+    file_in >> node_cnt;
+    if (node_cnt <= 0) {
+        cout << "错误: 非法的结点个数!" << endl;
+        return;
+    }
+    free_tree(TREE.ptr);
+    FREQ_INFO.clear();
+    CHARSET.clear();
+    INITIALIZED = false;
+    BUILT = false;
+    vector<TreeNodeBox> boxed_nodes((size_t)node_cnt + 1);
+    vector<pair<size_t, size_t>> ptr_guide((size_t)node_cnt + 1);
+    boxed_nodes[0].ptr = NULL;
+    ptr_guide[0] = {0, 0};
+    for (int i = 0; i < node_cnt; i++) {
+        int id, ascii, freq, l_child, r_child;
+        file_in >> id >> ascii >> freq >> l_child >> r_child;
+        if (id <= 0 || ascii < 0 || freq <= 0 || l_child > node_cnt ||
+            r_child > node_cnt || (ascii != 0 && CHARSET.count((char)ascii))) {
+            cout << "错误: 非法的文件内容! 位置: 第" << i + 2 << "行.\n";
+            return;
+        }
+        boxed_nodes[(size_t)id].ptr = (TreeNode *)malloc(sizeof(TreeNode));
+        boxed_nodes[(size_t)id].ptr->ch = (char)ascii;
+        boxed_nodes[(size_t)id].ptr->freq = freq;
+        boxed_nodes[(size_t)id].ptr->left = NULL;
+        boxed_nodes[(size_t)id].ptr->right = NULL;
+        ptr_guide[(size_t)id] = {(size_t)l_child, (size_t)r_child};
+        if (ascii != 0) {
+            FREQ_INFO.insert({(char)ascii, freq});
+            CHARSET.insert((char)ascii);
+        }
+    }
+    for (size_t i = 1; i <= (size_t)node_cnt; i++) {
+        boxed_nodes[i].ptr->left =
+            (ptr_guide[i].first == 0 ? NULL
+                                     : boxed_nodes[ptr_guide[i].first].ptr);
+        boxed_nodes[i].ptr->right =
+            (ptr_guide[i].second == 0 ? NULL
+                                      : boxed_nodes[ptr_guide[i].second].ptr);
+    }
+    TREE = boxed_nodes[1];
+    INITIALIZED = true;
+    BUILT = true;
+}
+
+void gen_code(void) {
 }
 
 int main(void) {
@@ -406,25 +523,30 @@ int main(void) {
         put_prompt();
         cin >> choice;
         switch (CONVERTED_CHOICE) {
-        case 'I':
+        case 'I': // Init
             init();
             break;
-        case 'S':
+        case 'S': // Stat
             ESCAPE_IF_NOT_INITIALIZED
             stat();
             break;
-        case 'B':
+        case 'B': // Build
             ESCAPE_IF_NOT_INITIALIZED
             build();
             break;
-        case 'T':
+        case 'L': // Load
+            load();
+            break;
+        case 'T': // Tree
             ESCAPE_IF_NOT_INITIALIZED
             break;
-        case 'E':
+        case 'E': // Encode
             ESCAPE_IF_NOT_INITIALIZED
+            ESCAPE_IF_NOT_BUILT
             break;
-        case 'P':
+        case 'P': // Print
             ESCAPE_IF_NOT_INITIALIZED
+            ESCAPE_IF_NOT_BUILT
             ESCAPE_IF_NOT_ENCODED
             break;
         case 'D':

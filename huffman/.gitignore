@@ -7,3 +7,8 @@ build/
 # GCC built binary
 a.out
 huffman
+
+# Files for testing
+test_tree
+test.out
+test.in

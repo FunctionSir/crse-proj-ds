@@ -2,7 +2,7 @@
  * @Author: FunctionSir
  * @License: AGPLv3
  * @Date: 2024-12-23 08:23:59
- * @LastEditTime: 2024-12-23 15:07:40
+ * @LastEditTime: 2024-12-23 16:05:02
  * @LastEditors: FunctionSir
  * @Description: -
  * @FilePath: /crse-proj-ds/huffman/main.cpp
@@ -35,7 +35,7 @@ using namespace std;
 
 /* If not encoded, escape */
 #define ESCAPE_IF_NOT_ENCODED                                                  \
-    if (!ENCODED) {                                                            \
+    if (!IS_ENCODED) {                                                         \
         cout << "您还没有编码过!" << endl;                                     \
         continue;                                                              \
     }
@@ -60,7 +60,7 @@ const string VER = "0.1.0";
 
 /* Frequent info entry */
 struct Freq {
-    char ch;  // Char
+    int ch;   // Char
     int freq; // Frequent
     /* Impl operator < for Freq */
     bool operator<(const Freq &b) const {
@@ -69,7 +69,7 @@ struct Freq {
 };
 
 struct TreeNode {
-    char ch;         // Char
+    int ch;          // Char
     int freq;        // Frequent
     TreeNode *left;  // Left child
     TreeNode *right; // Right child
@@ -88,8 +88,9 @@ struct TreeNodeBox {
 
 TreeNodeBox TREE = {NULL};
 multiset<Freq> FREQ_INFO;
-set<char> CHARSET;
-map<char, string> CODE;
+set<int> CHARSET;
+map<int, string> CODE;
+string ENCODED;
 
 /* Input prompt */
 string PROMPT = ">>> ";
@@ -104,7 +105,7 @@ bool BUILT = false;
 bool CODE_GENED = false;
 
 /* Encoded yet */
-bool ENCODED = false;
+bool IS_ENCODED = false;
 
 /* Put prompt */
 void put_prompt(void) {
@@ -128,6 +129,32 @@ void print_menu(void) {
     cout << "[Q]uit             退出" << endl;
 }
 
+void free_tree(TreeNode *tree) {
+    if (tree == NULL) {
+        return;
+    }
+    if (tree->left != NULL) {
+        free_tree(tree->left);
+    }
+    if (tree->right != NULL) {
+        free_tree(tree->right);
+    }
+    free(tree);
+}
+
+void reset() {
+    CODE_GENED = false;
+    INITIALIZED = false;
+    BUILT = false;
+    IS_ENCODED = false;
+    ENCODED = "";
+    free_tree(TREE.ptr);
+    TREE = {NULL};
+    FREQ_INFO.clear();
+    CHARSET.clear();
+    CODE.clear();
+}
+
 /* Initialization */
 void init(void) {
     char choice;
@@ -139,6 +166,7 @@ void init(void) {
         if (CONVERTED_CHOICE != 'Y') {
             return;
         }
+        reset();
     }
     cout << "请选择字符集和频度数据来源:" << endl;
     cout << "[F]ile  从文件读入" << endl;
@@ -165,11 +193,8 @@ void init(void) {
             cout << "数据非法: 字符集大小不存在, 或不合法!" << endl;
             return;
         }
-        FREQ_INFO.clear();
-        CHARSET.clear();
-        INITIALIZED = false;
         for (int i = 0; i < charset_size; i++) {
-            char cur_ch = 0;
+            int cur_ch = 0;
             int cur_freq = -1;
             freq_file >> cur_ch >> cur_freq;
             if (cur_ch == 0 || cur_freq <= 0) {
@@ -181,7 +206,7 @@ void init(void) {
                 cout << "数据非法: 存在重复的字符频度条目!" << endl;
                 return;
             }
-            FREQ_INFO.insert({cur_ch, cur_freq});
+            FREQ_INFO.insert({(char)cur_ch, cur_freq});
         }
         freq_file.close();
         break;
@@ -193,13 +218,11 @@ void init(void) {
             cout << "数据非法: 字符集大小不合法!" << endl;
             return;
         }
-        FREQ_INFO.clear();
-        CHARSET.clear();
-        INITIALIZED = false;
-        cout << "接下来, 输入字符及其频度, 每行一组, 字符和频度间用空格隔开:"
+        cout << "接下来, 输入字符的ASCII及其频度, 每行一组, "
+                "字符和频度间用空格隔开:"
              << endl;
         for (int i = 1; i <= charset_size; i++) {
-            char cur_ch = 0;
+            int cur_ch = 0;
             int cur_freq = -1;
             cout << "[" << i << "] "; // Line number
             put_prompt();
@@ -241,11 +264,10 @@ void init(void) {
         break;
     case 'A':
         cout << "您要统计某文件内的信息还是手动输入?" << endl;
+        cout << "[F]ile  从文件读入" << endl;
+        cout << "[I]nput   手动输入" << endl;
         put_prompt();
         cin >> choice;
-        FREQ_INFO.clear();
-        CHARSET.clear();
-        INITIALIZED = false;
         switch (CONVERTED_CHOICE) {
         case 'F': {
             char cur_char;
@@ -323,21 +345,9 @@ void stat(void) {
     cout << "字符集大小: " << FREQ_INFO.size() << endl;
     cout << "详细信息:" << endl;
     for (auto x : FREQ_INFO) {
-        cout << "字符\"" << x.ch << "\"的频数是: " << x.freq << "." << endl;
+        cout << "字符\"" << (char)x.ch << "\"的频数是: " << x.freq << "."
+             << endl;
     }
-}
-
-void free_tree(TreeNode *tree) {
-    if (tree == NULL) {
-        return;
-    }
-    if (tree->left != NULL) {
-        free_tree(tree->left);
-    }
-    if (tree->right != NULL) {
-        free_tree(tree->right);
-    }
-    free(tree);
 }
 
 /* Serialize, convert a tree to a string */
@@ -374,8 +384,12 @@ void build(void) {
             return;
         }
         free_tree(TREE.ptr);
-        BUILT = false;
         TREE = {NULL};
+        BUILT = false;
+        CODE.clear();
+        CODE_GENED = false;
+        ENCODED = "";
+        IS_ENCODED = false;
     }
     multiset<TreeNodeBox> on_build;
     for (auto x : FREQ_INFO) {
@@ -442,6 +456,7 @@ void load(void) {
         if (CONVERTED_CHOICE != 'Y') {
             return;
         }
+        reset();
     }
     if (BUILT) {
         cout << "看起来您已经构建过哈夫曼树了, 要继续么?" << endl;
@@ -451,9 +466,7 @@ void load(void) {
         if (CONVERTED_CHOICE != 'Y') {
             return;
         }
-        free_tree(TREE.ptr);
-        BUILT = false;
-        TREE = {NULL};
+        reset();
     }
     string path;
     cout << "请输入树文件的路径:" << endl;
@@ -471,11 +484,6 @@ void load(void) {
         cout << "错误: 非法的结点个数!" << endl;
         return;
     }
-    free_tree(TREE.ptr);
-    FREQ_INFO.clear();
-    CHARSET.clear();
-    INITIALIZED = false;
-    BUILT = false;
     vector<TreeNodeBox> boxed_nodes((size_t)node_cnt + 1);
     vector<pair<size_t, size_t>> ptr_guide((size_t)node_cnt + 1);
     boxed_nodes[0].ptr = NULL;
@@ -512,7 +520,96 @@ void load(void) {
     BUILT = true;
 }
 
-void gen_code(void) {
+void gen_code(TreeNode *t, string before) {
+    if (t->ch != 0 && t->left == NULL && t->right == NULL) {
+        CODE[t->ch] = before;
+        return;
+    }
+    if (t->left != NULL) {
+        gen_code(t->left, before + "0");
+    }
+    if (t->right != NULL) {
+        gen_code(t->right, before + "1");
+    }
+}
+
+void encode(void) {
+    char choice;
+    if (!CODE_GENED) {
+        cout << "生成编码中, 请稍候..." << endl;
+        gen_code(TREE.ptr, "");
+        CODE_GENED = true;
+    }
+    cout << "您要编码什么?" << endl;
+    cout << "[F]ile        文件内容" << endl;
+    cout << "[I]nput 编码输入的内容" << endl;
+    put_prompt();
+    cin >> choice;
+    ENCODED = "";
+    switch (CONVERTED_CHOICE) {
+    case 'F': {
+        string path;
+        cout << "请输入待编码文件的路径:" << endl;
+        put_prompt();
+        getline(cin, _);
+        getline(cin, path);
+        ifstream in_file(path);
+        if (!in_file.is_open()) {
+            cout << "错误: 无法打开文件!" << endl;
+            return;
+        }
+        char cur_char;
+        while (in_file >> cur_char) {
+            if (!CHARSET.count(cur_char)) {
+                cout << "警告: 字符\"" << cur_char
+                     << "\"不存在于给定的字符集中! 已忽略!" << endl;
+            }
+            ENCODED += CODE[cur_char];
+        }
+    } break;
+    case 'I': {
+        string text;
+        cout << "请输入待编码的内容(输入Enter结束):" << endl;
+        put_prompt();
+        getline(cin, _);
+        getline(cin, text);
+        for (auto cur_char : text) {
+            if (!CHARSET.count(cur_char)) {
+                cout << "警告: 字符\"" << cur_char
+                     << "\"不存在于给定的字符集中! 已忽略!" << endl;
+            }
+            ENCODED += CODE[cur_char];
+        }
+    } break;
+    default: {
+        cout << "错误: 未知的意图!" << endl;
+    } break;
+    }
+    cout << "要输出结果到文件么?";
+    cout << "要输出, 输入Y或y, 否则, 输入其他内容." << endl;
+    put_prompt();
+    cin >> choice;
+    if (CONVERTED_CHOICE != 'Y') {
+        return;
+    }
+    int per_line, now = 0;
+    cout << "每行您希望有多少个字符?" << endl;
+    put_prompt();
+    cin >> per_line;
+    string path;
+    cout << "请输入文件的路径:" << endl;
+    put_prompt();
+    getline(cin, _);
+    getline(cin, path);
+    ofstream file_out(path);
+    for (auto ch : ENCODED) {
+        file_out << ch;
+        now++;
+        if (now == per_line) {
+            file_out << endl;
+            now = 0;
+        }
+    }
 }
 
 int main(void) {
@@ -543,6 +640,7 @@ int main(void) {
         case 'E': // Encode
             ESCAPE_IF_NOT_INITIALIZED
             ESCAPE_IF_NOT_BUILT
+            encode();
             break;
         case 'P': // Print
             ESCAPE_IF_NOT_INITIALIZED

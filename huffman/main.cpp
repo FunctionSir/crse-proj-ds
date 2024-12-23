@@ -2,7 +2,7 @@
  * @Author: FunctionSir
  * @License: AGPLv3
  * @Date: 2024-12-23 08:23:59
- * @LastEditTime: 2024-12-23 16:05:02
+ * @LastEditTime: 2024-12-23 17:08:08
  * @LastEditors: FunctionSir
  * @Description: -
  * @FilePath: /crse-proj-ds/huffman/main.cpp
@@ -14,6 +14,7 @@
 #include <iostream>
 #include <map>
 #include <set>
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -520,6 +521,69 @@ void load(void) {
     BUILT = true;
 }
 
+int get_tree_hight(TreeNode *tree, int cur_hight) {
+    if (tree == NULL) {
+        return cur_hight;
+    }
+    return max(get_tree_hight(tree->left, cur_hight + 1),
+               get_tree_hight(tree->right, cur_hight + 1));
+}
+
+void print_part(TreeNode *tree, int max_len, int this_len, stringstream &os) {
+    if (tree == NULL) {
+        return;
+    }
+    stringstream to_print_stream;
+    if (tree->ch == 0) {
+        to_print_stream << "#" << "[" << tree->freq << "]";
+    } else {
+        to_print_stream << "#" << (char)tree->ch << "(" << tree->freq << ")";
+    }
+    string to_print = to_print_stream.str();
+    for (int i = 0; i < max_len - this_len; i++) {
+        os << " ";
+    }
+    os << to_print;
+    for (int i = 0; i < this_len - (int)to_print.length(); i++) {
+        os << '#';
+    }
+    os << endl;
+    if (tree->left != NULL) {
+        print_part(tree->left, max_len, this_len - 4, os);
+    }
+    if (tree->right != NULL) {
+        print_part(tree->right, max_len, this_len - 4, os);
+    }
+}
+
+void print_tree(void) {
+    int max_len = 4 * get_tree_hight(TREE.ptr, 0) + 16;
+    cout << "此哈夫曼树的凹入表示:" << endl << endl;
+    stringstream outstream;
+    print_part(TREE.ptr, max_len, max_len, outstream);
+    string outstring = outstream.str();
+    cout << outstring << endl;
+    cout << "要输出到文件么?" << endl;
+    cout << "要保存, 输入Y或y, 否则, 输入其他内容." << endl;
+    put_prompt();
+    char choice;
+    cin >> choice;
+    if (CONVERTED_CHOICE != 'Y') {
+        return;
+    }
+    cout << "请输入要保存到的文件的路径:" << endl;
+    put_prompt();
+    string outfile;
+    getline(cin, _);
+    getline(cin, outfile);
+    ofstream ofs(outfile);
+    if (!ofs.is_open()) {
+        cout << "错误: 无法打开文件!" << endl;
+    }
+    ofs << outstring;
+    ofs.close();
+}
+
 void gen_code(TreeNode *t, string before) {
     if (t->ch != 0 && t->left == NULL && t->right == NULL) {
         CODE[t->ch] = before;
@@ -585,6 +649,7 @@ void encode(void) {
         cout << "错误: 未知的意图!" << endl;
     } break;
     }
+    IS_ENCODED = true;
     cout << "要输出结果到文件么?";
     cout << "要输出, 输入Y或y, 否则, 输入其他内容." << endl;
     put_prompt();
@@ -607,6 +672,21 @@ void encode(void) {
         now++;
         if (now == per_line) {
             file_out << endl;
+            now = 0;
+        }
+    }
+}
+
+void print_encode_result(void) {
+    int per_line, now = 0;
+    cout << "每行您希望有多少个字符?" << endl;
+    put_prompt();
+    cin >> per_line;
+    for (auto ch : ENCODED) {
+        cout << ch;
+        now++;
+        if (now == per_line) {
+            cout << endl;
             now = 0;
         }
     }
@@ -636,6 +716,8 @@ int main(void) {
             break;
         case 'T': // Tree
             ESCAPE_IF_NOT_INITIALIZED
+            ESCAPE_IF_NOT_BUILT
+            print_tree();
             break;
         case 'E': // Encode
             ESCAPE_IF_NOT_INITIALIZED
@@ -646,6 +728,7 @@ int main(void) {
             ESCAPE_IF_NOT_INITIALIZED
             ESCAPE_IF_NOT_BUILT
             ESCAPE_IF_NOT_ENCODED
+            print_encode_result();
             break;
         case 'D':
             ESCAPE_IF_NOT_INITIALIZED

@@ -151,6 +151,11 @@ void floyd(int flag) {
 }
 int main() {
     int i, m;
+    FILE *data = fopen("campus.dat", "r");
+    if (data == NULL) {
+        puts("错误: 无法读取数据文件!");
+        return EXIT_FAILURE;
+    }
     printf("请输入景点个数\n");
     scanf("%d", &n);
     printf("\n请输入景点的信息（代号，名称，简介）:\n");
@@ -277,5 +282,5 @@ int main() {
         }
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }

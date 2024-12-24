@@ -155,9 +155,13 @@ int main() {
     puts("[[ 校园导航系统 ]]");
     puts("读取数据文件中, 请稍候...");
     FILE *data = fopen("campus.dat", "r");
-    if (data == NULL) {
+    while (data == NULL) {
         puts("错误: 无法读取数据文件!");
-        return EXIT_FAILURE;
+        puts("您可以自行输入数据文件的路径:");
+        char path[256];
+        fgets(path, 256, stdin);
+        path[strlen(path) - 1] = 0;
+        data = fopen(path, "r");
     }
     // 输入景点个数
     fscanf(data, "%d", &n);

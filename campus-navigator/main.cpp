@@ -149,52 +149,71 @@ void floyd(int flag) {
     }
     printf("%d", pathw[i]);
 }
+
 int main() {
     int i, m;
+    puts("[[ 校园导航系统 ]]");
+    puts("读取数据文件中, 请稍候...");
     FILE *data = fopen("campus.dat", "r");
     if (data == NULL) {
         puts("错误: 无法读取数据文件!");
         return EXIT_FAILURE;
     }
-    printf("请输入景点个数\n");
-    scanf("%d", &n);
-    printf("\n请输入景点的信息（代号，名称，简介）:\n");
+    // 输入景点个数
+    fscanf(data, "%d", &n);
+    // 输入景点的信息（代号，名称，简介）
     for (i = 1; i <= n; i++)
-        scanf("%d%s%s", &m, sce[i].name, sce[i].intro);
+        fscanf(data, "%d%s%s", &m, sce[i].name, sce[i].intro);
     int x, y, w;
 
-    printf("\n请输入景点步行路线数：\n");
-    scanf("%d", &lu[0]);
-    printf("\n请依次输入所有的步行路线：\n");
+    // 输入景点步行路线数
+    fscanf(data, "%d", &lu[0]);
+    // 依次输入所有的步行路线
     for (i = 1; i <= lu[0]; i++) {
-        scanf("%d%d%d", &x, &y, &w);
+        fscanf(data, "%d%d%d", &x, &y, &w);
         add(x, y, w, 0);
         add(y, x, w, 0);
     }
 
-    printf("\n请输入景点汽车路线数：\n");
-    scanf("%d", &lu[1]);
-    printf("\n请依次输入所有的汽车路线：\n");
+    // 输入景点汽车路线数
+    fscanf(data, "%d", &lu[1]);
+    // 依次输入所有的汽车路线
     for (i = 1; i <= lu[1]; i++) {
-        scanf("%d%d%d", &x, &y, &w);
+        fscanf(data, "%d%d%d", &x, &y, &w);
         add(x, y, w, 1);
         add(y, x, w, 1);
     }
 
-    printf("\n请输入步行路线景点间的方位数\n");
-    scanf("%d", &fang[0]);
-    printf("\n请依次输入景点间的步行方位：\n");
+    // 输入步行路线景点间的方位数
+    fscanf(data, "%d", &fang[0]);
+    // 依次输入景点间的步行方位
     for (i = 1; i <= fang[0]; i++) {
-        scanf("%d%d", &x, &y);
-        scanf("%s", sce[x].direct[0][y]);
+        fscanf(data, "%d%d", &x, &y);
+        fscanf(data, "%s", sce[x].direct[0][y]);
     }
 
-    printf("\n请输入汽车路线景点间的方位数\n");
-    scanf("%d", &fang[1]);
-    printf("\n请依次输入景点间的汽车方位：\n");
+    // 汽车路线景点间的方位数
+    fscanf(data, "%d", &fang[1]);
+    // 依次输入景点间的汽车方位
     for (i = 1; i <= fang[1]; i++) {
-        scanf("%d%d", &x, &y);
-        scanf("%s", sce[x].direct[1][y]);
+        fscanf(data, "%d%d", &x, &y);
+        fscanf(data, "%s", sce[x].direct[1][y]);
+    }
+
+    // 读取步行导游仿真图
+    int map_walk_lines_cnt;
+    fscanf(data, "%d\n", &map_walk_lines_cnt);
+    char map_walk_lines[map_walk_lines_cnt][100];
+    for (int i = 0; i < map_walk_lines_cnt; i++) {
+        fgets(map_walk_lines[i], 100, data);
+    }
+
+    // 读取汽车导游仿真图
+    int map_drive_lines_cnt;
+    fscanf(data, "%d\n", &map_drive_lines_cnt);
+    char map_drive_lines[map_drive_lines_cnt][100];
+    for (int i = 0; i < map_drive_lines_cnt; i++) {
+        fgets(map_drive_lines[i], 100, data);
     }
 
     int v;
@@ -203,7 +222,9 @@ int main() {
                "查询任意两个景点的最短路线\n");
         printf("3.查询任意两个景点的所有路线\n4.查找多个景点的最佳路线\n5."
                "导游仿真图\n");
-        scanf("%d", &v);
+        if (scanf("%d", &v) != 1) {
+            exit(EXIT_SUCCESS);
+        }
         if (v == 0)
             break;
         switch (v) {
@@ -243,40 +264,16 @@ int main() {
             break;
         }
         case 5: {
-            printf("步行导游仿真图\n");
-            printf("            9菜鸟驿站                 \n");
-            printf("          *     *                     \n");
-            printf("        *       *                     \n");
-            printf("      *         *                     \n");
-            printf(" 8女生宿舍*****5食堂    7男生宿舍     \n");
-            printf("     *        * *         *  *        \n");
-            printf("     *      *   *       *    *        \n");
-            printf("     *    *     *     *      *        \n");
-            printf("   4操场*******3水库*     6实验楼     \n");
-            printf("     *          *        *   *        \n");
-            printf("     *          *       *    *        \n");
-            printf("     *          *      *     *        \n");
-            printf("  10图书馆***2教学楼*****11地下通道   \n");
-            printf("     *          *                     \n");
-            printf("       *        *                     \n");
-            printf("         *      *                     \n");
-            printf("           *    *                     \n");
-            printf("             *1校门口                 \n");
-            printf("汽车导游仿真图\n");
-            printf(" 8女生宿舍*****5食堂    7男生宿舍     \n");
-            printf("     *        * *         *  *        \n");
-            printf("     *      *   *       *    *        \n");
-            printf("     *    *     *     *      *        \n");
-            printf("   4操场*******3水库*     6实验楼     \n");
-            printf("     *          *        *   *        \n");
-            printf("     *          *       *    *        \n");
-            printf("     *          *      *     *        \n");
-            printf("  10图书馆***2教学楼*****11地下通道   \n");
-            printf("     *          *                     \n");
-            printf("       *        *                     \n");
-            printf("         *      *                     \n");
-            printf("           *    *                     \n");
-            printf("             *1校门口                 \n");
+            short walk;
+            puts("您要步行(输入1)还是开车(输入0)?");
+            scanf("%hd", &walk);
+            putchar('\n');
+            for (int i = 0; walk && i < map_walk_lines_cnt; i++) {
+                puts(map_walk_lines[i]);
+            }
+            for (int i = 0; !walk && i < map_drive_lines_cnt; i++) {
+                puts(map_drive_lines[i]);
+            }
             break;
         }
         }

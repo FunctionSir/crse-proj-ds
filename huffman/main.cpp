@@ -2,7 +2,7 @@
  * @Author: FunctionSir
  * @License: AGPLv3
  * @Date: 2024-12-23 08:23:59
- * @LastEditTime: 2024-12-24 08:35:42
+ * @LastEditTime: 2024-12-26 09:23:42
  * @LastEditors: FunctionSir
  * @Description: -
  * @FilePath: /crse-proj-ds/huffman/main.cpp
@@ -174,7 +174,9 @@ void init(void) {
     char choice;
     if (INITIALIZED) {
         cout << "看起来您已经初始化过了, 要继续么?" << endl;
-        cout << "要继续, 输入Y或y, 否则, 输入其他内容." << endl;
+        cout << "要继续, 输入Y或y, 否则, 输入一个其他字符. "
+                "输入完毕后请按下Enter."
+             << endl;
         put_prompt();
         cin >> choice;
         if (CONVERTED_CHOICE != 'Y') {
@@ -258,7 +260,9 @@ void init(void) {
             CHARSET.insert(cur_ch);
         }
         cout << "要输出您的输入到文件么?" << endl;
-        cout << "要输出, 输入Y或y, 否则, 输入其他内容." << endl;
+        cout << "要输出, 输入Y或y, 否则, 输入一个其他字符. "
+                "输入完毕后请按下Enter."
+             << endl;
         put_prompt();
         cin >> choice;
         if (CONVERTED_CHOICE == 'Y') {
@@ -328,7 +332,9 @@ void init(void) {
             return;
         }
         cout << "要输出结果到文件么?" << endl;
-        cout << "要输出, 输入Y或y, 否则, 输入其他内容." << endl;
+        cout << "要输出, 输入Y或y, 否则, 输入一个其他字符. "
+                "输入完毕后请按下Enter."
+             << endl;
         put_prompt();
         cin >> choice;
         if (CONVERTED_CHOICE == 'Y') {
@@ -395,7 +401,9 @@ void build(void) {
     char choice;
     if (BUILT) {
         cout << "看起来您已经构建过哈夫曼树了, 要继续么?" << endl;
-        cout << "要继续, 输入Y或y, 否则, 输入其他内容." << endl;
+        cout << "要继续, 输入Y或y, 否则, 输入一个其他字符. "
+                "输入完毕后请按下Enter."
+             << endl;
         put_prompt();
         cin >> choice;
         if (CONVERTED_CHOICE != 'Y') {
@@ -442,7 +450,8 @@ void build(void) {
     TREE = *on_build.begin();
     BUILT = true;
     cout << "要保存哈夫曼树到文件么?" << endl;
-    cout << "要保存, 输入Y或y, 否则, 输入其他内容." << endl;
+    cout << "要保存, 输入Y或y, 否则, 输入一个其他字符. 输入完毕后请按下Enter."
+         << endl;
     put_prompt();
     cin >> choice;
     if (CONVERTED_CHOICE == 'Y') {
@@ -469,7 +478,9 @@ void load(void) {
     char choice;
     if (INITIALIZED) {
         cout << "看起来您已经初始化过了, 要继续么?" << endl;
-        cout << "要继续, 输入Y或y, 否则, 输入其他内容." << endl;
+        cout << "要继续, 输入Y或y, 否则, 输入一个其他字符. "
+                "输入完毕后请按下Enter."
+             << endl;
         put_prompt();
         cin >> choice;
         if (CONVERTED_CHOICE != 'Y') {
@@ -479,7 +490,9 @@ void load(void) {
     }
     if (BUILT) {
         cout << "看起来您已经构建过哈夫曼树了, 要继续么?" << endl;
-        cout << "要继续, 输入Y或y, 否则, 输入其他内容." << endl;
+        cout << "要继续, 输入Y或y, 否则, 输入一个其他字符. "
+                "输入完毕后请按下Enter."
+             << endl;
         put_prompt();
         cin >> choice;
         if (CONVERTED_CHOICE != 'Y') {
@@ -582,7 +595,8 @@ void print_tree(void) {
     string outstring = outstream.str();
     cout << outstring << endl;
     cout << "要输出到文件么?" << endl;
-    cout << "要保存, 输入Y或y, 否则, 输入其他内容." << endl;
+    cout << "要保存, 输入Y或y, 否则, 输入一个其他字符. 输入完毕后请按下Enter."
+         << endl;
     put_prompt();
     char choice;
     cin >> choice;
@@ -679,7 +693,8 @@ void encode(void) {
     }
     IS_ENCODED = true;
     cout << "要输出结果到文件么?";
-    cout << "要输出, 输入Y或y, 否则, 输入其他内容." << endl;
+    cout << "要输出, 输入Y或y, 否则, 输入一个其他字符. 输入完毕后请按下Enter."
+         << endl;
     put_prompt();
     cin >> choice;
     if (CONVERTED_CHOICE != 'Y') {
@@ -786,7 +801,8 @@ void decode(void) {
     cout << "解码所得:" << endl << endl;
     cout << DECODED << endl << endl;
     cout << "要输出结果到文件么?";
-    cout << "要输出, 输入Y或y, 否则, 输入其他内容." << endl;
+    cout << "要输出, 输入Y或y, 否则, 输入一个其他字符. 输入完毕后请按下Enter."
+         << endl;
     put_prompt();
     cin >> choice;
     if (CONVERTED_CHOICE != 'Y') {

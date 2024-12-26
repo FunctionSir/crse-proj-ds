@@ -4,32 +4,32 @@
 
 using namespace std;
 const int inf = 0x3f3f3f3f;
-int head[2][100], cnt[2]; // é“¾å¼å‰å‘æ˜Ÿ
-int lu[2], fang[2];       // è·¯çº¿å’Œæ–¹ä½
+int head[2][100], cnt[2]; // Á´Ê½Ç°ÏòĞÇ
+int lu[2], fang[2];       // Â·ÏßºÍ·½Î»
 int dfsv[100] = {0}, top, way, g[100];
 int floydp[100], floydw[100][100], pathw[100], pcnt;
 int n;
 
-struct scenery // æ™¯ç‚¹ä¿¡æ¯
+struct scenery // ¾°µãĞÅÏ¢
 {
     char name[100], intro[100], direct[2][100][100];
 } sce[100];
 struct S {
     int next, to, w;
 } d[2][100];
-void add(int x, int y, int w, int f) // åˆ›å»ºæ— å‘å›¾
+void add(int x, int y, int w, int f) // ´´½¨ÎŞÏòÍ¼
 {
     d[f][++cnt[f]].to = y;
     d[f][cnt[f]].w = w;
     d[f][cnt[f]].next = head[f][x];
     head[f][x] = cnt[f];
 }
-void scene(int k) // æŸ¥è¯¢ä»»æ„æ™¯ç‚¹ä¿¡æ¯
+void scene(int k) // ²éÑ¯ÈÎÒâ¾°µãĞÅÏ¢
 {
-    printf("è¯¥æ™¯ç‚¹çš„ä»£å·ä¸º%d\nåç§°ï¼š%s\nç®€ä»‹ï¼š%s\n", k, sce[k].name,
+    printf("¸Ã¾°µãµÄ´úºÅÎª%d\nÃû³Æ£º%s\n¼ò½é£º%s\n", k, sce[k].name,
            sce[k].intro);
 }
-void dij(int x, int y, int f) // æŸ¥æ‰¾ä»»æ„ä¸¤ä¸ªæ™¯ç‚¹çš„æœ€çŸ­è·¯å¾„
+void dij(int x, int y, int f) // ²éÕÒÈÎÒâÁ½¸ö¾°µãµÄ×î¶ÌÂ·¾¶
 {
     int c[100], v[100], p[100], i, j, k, t[100];
     memset(c, inf, sizeof(c));
@@ -59,21 +59,21 @@ void dij(int x, int y, int f) // æŸ¥æ‰¾ä»»æ„ä¸¤ä¸ªæ™¯ç‚¹çš„æœ€çŸ­è·¯å¾„
         j = p[j];
     }
     if (!k) {
-        printf("\nè¿™ä¸¤ä¸ªæ™¯ç‚¹ä¹‹é—´ä¸ç›¸é€š\n");
+        printf("\nÕâÁ½¸ö¾°µãÖ®¼ä²»ÏàÍ¨\n");
         return;
     }
-    printf("\nä¸¤æ™¯ç‚¹æœ€çŸ­è·¯çº¿ä¸ºï¼š");
+    printf("\nÁ½¾°µã×î¶ÌÂ·ÏßÎª£º");
     for (i = k, t[0] = y; i > 0; i--) {
         printf(" %d", t[i]);
         printf(" %s->", sce[t[i]].direct[f][t[i - 1]]);
     }
     printf(" %d", y);
-    printf("\nä¸¤æ™¯ç‚¹é—´çš„è·ç¦»ä¸ºï¼š%d\n", c[y]);
+    printf("\nÁ½¾°µã¼äµÄ¾àÀëÎª£º%d\n", c[y]);
 }
 
-void path(int g[], int top, int f) // æ‰“å°è·¯å¾„
+void path(int g[], int top, int f) // ´òÓ¡Â·¾¶
 {
-    printf("è·¯å¾„%d:", ++way);
+    printf("Â·¾¶%d:", ++way);
     int i;
     for (i = 1; i < top; i++) {
         printf(" %d ", g[i]);
@@ -81,7 +81,7 @@ void path(int g[], int top, int f) // æ‰“å°è·¯å¾„
     }
     printf(" %d\n", g[top]);
 }
-void dfs(int x, int y, int f, int t) // æ·±æœä»»æ„ä¸¤ä¸ªæ™¯ç‚¹çš„æ‰€æœ‰è·¯å¾„
+void dfs(int x, int y, int f, int t) // ÉîËÑÈÎÒâÁ½¸ö¾°µãµÄËùÓĞÂ·¾¶
 {
     dfsv[x] = 1;
     g[++top] = x;
@@ -93,13 +93,13 @@ void dfs(int x, int y, int f, int t) // æ·±æœä»»æ„ä¸¤ä¸ªæ™¯ç‚¹çš„æ‰€æœ‰è·¯å¾„
     dfsv[x] = 0;
     top--;
 }
-void start(int x, int y, int f) // åˆå§‹åŒ–æ ˆ
+void start(int x, int y, int f) // ³õÊ¼»¯Õ»
 {
     way = top = 0;
     memset(dfsv, 0, sizeof(dfsv));
     dfs(x, y, f, top);
     if (!way)
-        printf("\nè¿™ä¸¤ä¸ªæ™¯ç‚¹ä¹‹é—´ä¸ç›¸é€š\n");
+        printf("\nÕâÁ½¸ö¾°µãÖ®¼ä²»ÏàÍ¨\n");
 }
 
 void pathway(int l, int r) {
@@ -134,7 +134,7 @@ void floyd(int flag) {
             if (floydp[i] == pathw[j])
                 p = 1;
         if (dp[floydp[k]][floydp[i]] == inf) {
-            printf("  æ‚¨æŸ¥è¯¢çš„æ™¯ç‚¹ä¹‹é—´ä¸ç›¸é€š\n");
+            printf("  Äú²éÑ¯µÄ¾°µãÖ®¼ä²»ÏàÍ¨\n");
             return;
         }
         if (!p) {
@@ -152,59 +152,67 @@ void floyd(int flag) {
 
 int main() {
     int i, m;
-    puts("[[ æ ¡å›­å¯¼èˆªç³»ç»Ÿ ]]");
-    puts("è¯»å–æ•°æ®æ–‡ä»¶ä¸­, è¯·ç¨å€™...");
+    puts("[[ Ğ£Ô°µ¼º½ÏµÍ³ ]]");
+    puts("¶ÁÈ¡Êı¾İÎÄ¼şÖĞ, ÇëÉÔºò...");
+    printf("Ö÷Òª¾°µãĞÅÏ¢ÓĞ£º\n");
+    printf("´úºÅ1:Ğ£ÃÅ¿Ú\n");
+    printf("´úºÅ2:½ÌÑ§Â¥\n");
+    printf("´úºÅ3:Ë®¿â\n");
+    printf("´úºÅ4:²Ù³¡\n");
+    printf("´úºÅ5:Ê³ÌÃ\n");
+    printf("´úºÅ6:ÊµÑéÂ¥\n");
+    printf("´úºÅ7:ÄĞÉúËŞÉá\n");
+    printf("´úºÅ8:Å®ÉúËŞÉá\n");
+    printf("´úºÅ9:²ËÄñæäÕ¾\n");
+    printf("´úºÅ10:Í¼Êé¹İ\n");
+    printf("´úºÅ11:µØÏÂÍ¨µÀ\n");
     FILE *data = fopen("campus.dat", "r");
-    while (data == NULL) {
-        puts("é”™è¯¯: æ— æ³•è¯»å–æ•°æ®æ–‡ä»¶!");
-        puts("æ‚¨å¯ä»¥è‡ªè¡Œè¾“å…¥æ•°æ®æ–‡ä»¶çš„è·¯å¾„:");
-        char path[256];
-        fgets(path, 256, stdin);
-        path[strlen(path) - 1] = 0;
-        data = fopen(path, "r");
+    if (data == NULL) {
+        puts("´íÎó: ÎŞ·¨¶ÁÈ¡Êı¾İÎÄ¼ş!");
+        return EXIT_FAILURE;
     }
-    // è¾“å…¥æ™¯ç‚¹ä¸ªæ•°
+    // ÊäÈë¾°µã¸öÊı
     fscanf(data, "%d", &n);
-    // è¾“å…¥æ™¯ç‚¹çš„ä¿¡æ¯ï¼ˆä»£å·ï¼Œåç§°ï¼Œç®€ä»‹ï¼‰
+    // ÊäÈë¾°µãµÄĞÅÏ¢£¨´úºÅ£¬Ãû³Æ£¬¼ò½é£©
     for (i = 1; i <= n; i++)
         fscanf(data, "%d%s%s", &m, sce[i].name, sce[i].intro);
     int x, y, w;
 
-    // è¾“å…¥æ™¯ç‚¹æ­¥è¡Œè·¯çº¿æ•°
+    // ÊäÈë¾°µã²½ĞĞÂ·ÏßÊı
     fscanf(data, "%d", &lu[0]);
-    // ä¾æ¬¡è¾“å…¥æ‰€æœ‰çš„æ­¥è¡Œè·¯çº¿
+    // ÒÀ´ÎÊäÈëËùÓĞµÄ²½ĞĞÂ·Ïß
     for (i = 1; i <= lu[0]; i++) {
         fscanf(data, "%d%d%d", &x, &y, &w);
         add(x, y, w, 0);
         add(y, x, w, 0);
     }
 
-    // è¾“å…¥æ™¯ç‚¹æ±½è½¦è·¯çº¿æ•°
+    // ÊäÈë¾°µãÆû³µÂ·ÏßÊı
     fscanf(data, "%d", &lu[1]);
-    // ä¾æ¬¡è¾“å…¥æ‰€æœ‰çš„æ±½è½¦è·¯çº¿
+    // ÒÀ´ÎÊäÈëËùÓĞµÄÆû³µÂ·Ïß
     for (i = 1; i <= lu[1]; i++) {
         fscanf(data, "%d%d%d", &x, &y, &w);
         add(x, y, w, 1);
         add(y, x, w, 1);
     }
 
-    // è¾“å…¥æ­¥è¡Œè·¯çº¿æ™¯ç‚¹é—´çš„æ–¹ä½æ•°
+    // ÊäÈë²½ĞĞÂ·Ïß¾°µã¼äµÄ·½Î»Êı
     fscanf(data, "%d", &fang[0]);
-    // ä¾æ¬¡è¾“å…¥æ™¯ç‚¹é—´çš„æ­¥è¡Œæ–¹ä½
+    // ÒÀ´ÎÊäÈë¾°µã¼äµÄ²½ĞĞ·½Î»
     for (i = 1; i <= fang[0]; i++) {
         fscanf(data, "%d%d", &x, &y);
         fscanf(data, "%s", sce[x].direct[0][y]);
     }
 
-    // æ±½è½¦è·¯çº¿æ™¯ç‚¹é—´çš„æ–¹ä½æ•°
+    // Æû³µÂ·Ïß¾°µã¼äµÄ·½Î»Êı
     fscanf(data, "%d", &fang[1]);
-    // ä¾æ¬¡è¾“å…¥æ™¯ç‚¹é—´çš„æ±½è½¦æ–¹ä½
+    // ÒÀ´ÎÊäÈë¾°µã¼äµÄÆû³µ·½Î»
     for (i = 1; i <= fang[1]; i++) {
         fscanf(data, "%d%d", &x, &y);
         fscanf(data, "%s", sce[x].direct[1][y]);
     }
 
-    // è¯»å–æ­¥è¡Œå¯¼æ¸¸ä»¿çœŸå›¾
+    // ¶ÁÈ¡²½ĞĞµ¼ÓÎ·ÂÕæÍ¼
     int map_walk_lines_cnt;
     fscanf(data, "%d\n", &map_walk_lines_cnt);
     char map_walk_lines[map_walk_lines_cnt][100];
@@ -212,7 +220,7 @@ int main() {
         fgets(map_walk_lines[i], 100, data);
     }
 
-    // è¯»å–æ±½è½¦å¯¼æ¸¸ä»¿çœŸå›¾
+    // ¶ÁÈ¡Æû³µµ¼ÓÎ·ÂÕæÍ¼
     int map_drive_lines_cnt;
     fscanf(data, "%d\n", &map_drive_lines_cnt);
     char map_drive_lines[map_drive_lines_cnt][100];
@@ -222,10 +230,10 @@ int main() {
 
     int v;
     while (1) {
-        printf("è¯·è¾“å…¥:\n0.é€€å‡º\n1.æŸ¥è¯¢ä»»æ„æ™¯ç‚¹ä¿¡æ¯\n2."
-               "æŸ¥è¯¢ä»»æ„ä¸¤ä¸ªæ™¯ç‚¹çš„æœ€çŸ­è·¯çº¿\n");
-        printf("3.æŸ¥è¯¢ä»»æ„ä¸¤ä¸ªæ™¯ç‚¹çš„æ‰€æœ‰è·¯çº¿\n4.æŸ¥æ‰¾å¤šä¸ªæ™¯ç‚¹çš„æœ€ä½³è·¯çº¿\n5."
-               "å¯¼æ¸¸ä»¿çœŸå›¾\n");
+        printf("ÇëÊäÈë:\n0.ÍË³ö\n1.²éÑ¯ÈÎÒâ¾°µãĞÅÏ¢\n2."
+               "²éÑ¯ÈÎÒâÁ½¸ö¾°µãµÄ×î¶ÌÂ·Ïß\n");
+        printf("3.²éÑ¯ÈÎÒâÁ½¸ö¾°µãµÄËùÓĞÂ·Ïß\n4.²éÕÒ¶à¸ö¾°µãµÄ×î¼ÑÂ·Ïß\n5."
+               "µ¼ÓÎ·ÂÕæÍ¼\n");
         if (scanf("%d", &v) != 1) {
             exit(EXIT_SUCCESS);
         }
@@ -233,32 +241,33 @@ int main() {
             break;
         switch (v) {
         case 1: {
-            printf("\nè¯·è¾“å…¥è¦æŸ¥è¯¢çš„æ™¯ç‚¹ä»£å·:\n");
+            printf("\nÇëÊäÈëÒª²éÑ¯µÄ¾°µã´úºÅ:\n");
             scanf("%d", &v);
-            scene(v);
+            scene(v);0
+
             break;
         }
         case 2: {
-            printf("\nè¯·è¾“å…¥è¦æŸ¥è¯¢çš„è·¯çº¿ç±»å‹ï¼š\n0.æ­¥è¡Œ\n1.æ±½è½¦\n");
+            printf("\nÇëÊäÈëÒª²éÑ¯µÄÂ·ÏßÀàĞÍ£º\n0.²½ĞĞ\n1.Æû³µ\n");
             scanf("%d", &v);
-            printf("\nè¯·è¾“å…¥ä¸¤ä¸ªæ™¯ç‚¹çš„ä»£å·ï¼ˆè¾“å…¥çš„ç¬¬ä¸€ä¸ªæ™¯ç‚¹ä¸ºèµ·ç‚¹ï¼‰:\n");
+            printf("\nÇëÊäÈëÁ½¸ö¾°µãµÄ´úºÅ£¨ÊäÈëµÄµÚÒ»¸ö¾°µãÎªÆğµã£©:\n");
             scanf("%d%d", &x, &y);
             dij(x, y, v);
             break;
         }
         case 3: {
-            printf("\nè¯·è¾“å…¥è¦æŸ¥è¯¢çš„è·¯çº¿ç±»å‹ï¼š\n0.æ­¥è¡Œ\n1.æ±½è½¦\n");
+            printf("\nÇëÊäÈëÒª²éÑ¯µÄÂ·ÏßÀàĞÍ£º\n0.²½ĞĞ\n1.Æû³µ\n");
             scanf("%d", &v);
-            printf("\nè¯·è¾“å…¥ä¸¤ä¸ªæ™¯ç‚¹çš„ä»£å·ï¼ˆè¾“å…¥çš„ç¬¬ä¸€ä¸ªæ™¯ç‚¹ä¸ºèµ·ç‚¹ï¼‰:\n");
+            printf("\nÇëÊäÈëÁ½¸ö¾°µãµÄ´úºÅ£¨ÊäÈëµÄµÚÒ»¸ö¾°µãÎªÆğµã£©:\n");
             scanf("%d%d", &x, &y);
             start(x, y, v);
             break;
         }
         case 4: {
-            printf("\nè¯·è¾“å…¥è¦æŸ¥è¯¢çš„è·¯çº¿ç±»å‹ï¼š\n0.æ­¥è¡Œ\n1.æ±½è½¦\n");
+            printf("\nÇëÊäÈëÒª²éÑ¯µÄÂ·ÏßÀàĞÍ£º\n0.²½ĞĞ\n1.Æû³µ\n");
             scanf("%d", &v);
-            printf("\nè¯·ä¾æ¬¡è¾“å…¥æ‰€æœ‰æ™¯ç‚¹çš„ä»£å·ï¼ˆè¾“å…¥çš„ç¬¬ä¸€ä¸ªæ™¯ç‚¹ä¸ºèµ·ç‚¹ï¼‰,"
-                   "è¾“å…¥0ä»¥ç»“æŸ:\n");
+            printf("\nÇëÒÀ´ÎÊäÈëËùÓĞ¾°µãµÄ´úºÅ£¨ÊäÈëµÄµÚÒ»¸ö¾°µãÎªÆğµã£©,"
+                   "ÊäÈë0ÒÔ½áÊø:\n");
             for (i = 1;; i++) {
                 scanf("%d", &floydp[i]);
                 if (floydp[i] == 0)
@@ -269,7 +278,7 @@ int main() {
         }
         case 5: {
             short walk;
-            puts("æ‚¨è¦æ­¥è¡Œ(è¾“å…¥1)è¿˜æ˜¯å¼€è½¦(è¾“å…¥0)?");
+            puts("ÄúÒª²½ĞĞ(ÊäÈë1)»¹ÊÇ¿ª³µ(ÊäÈë0)?");
             scanf("%hd", &walk);
             putchar('\n');
             for (int i = 0; walk && i < map_walk_lines_cnt; i++) {
